@@ -3,322 +3,414 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dhanush Suresh | DevOps Engineer</title>
+  <title>dhanush@devops: ~</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-  
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
   <style>
     :root {
-      --bg-page: #f8fafc;
-      --bg-card: rgba(255, 255, 255, 0.8);
-      --accent: #6366f1; /* Modern Indigo */
-      --accent-dark: #4f46e5;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border-soft: rgba(226, 232, 240, 0.8);
-      --radius-lg: 20px;
+      --bg-term: #0d1117; /* GitHub Dark Dimmed */
+      --text-main: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent-cmd: #58a6ff; /* Blue for commands */
+      --accent-path: #7ee787; /* Green for user/path */
+      --accent-root: #d2a8ff; /* Purple for root */
+      --border: #30363d;
+      --font-stack: 'Fira Code', monospace;
     }
 
-    * { scroll-behavior: smooth; }
-
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg-page);
+      background-color: var(--bg-term);
       color: var(--text-main);
+      font-family: var(--font-stack);
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* --- LAYOUT UTILITIES --- */
+    section {
+      min-height: 90vh; /* Each command takes up a full screen feel */
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    a { color: var(--accent-cmd); text-decoration: none; border-bottom: 1px dotted var(--accent-cmd); }
+    a:hover { background: rgba(88, 166, 255, 0.15); }
+
+    /* --- TERMINAL ELEMENTS --- */
+    .prompt-line {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .user-path { color: var(--accent-path); font-weight: 700; margin-right: 10px; }
+    .separator { color: var(--text-muted); margin-right: 10px; }
+    .command-text { color: var(--accent-cmd); font-weight: 700; }
+    
+    /* Blinking Cursor */
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1.2rem;
+      background: var(--text-muted);
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+    .cursor.typing { animation: none; opacity: 1; }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Output Section (Hidden initially) */
+    .command-output {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .command-output.visible { opacity: 1; transform: translateY(0); }
+
+    /* --- SECTION SPECIFIC UI --- */
+
+    /* 1. HERO (whoami) */
+    .hero-ascii {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      white-space: pre;
+      margin-bottom: 2rem;
       overflow-x: hidden;
     }
 
-    /* Scroll Progress Bar */
-    #scroll-progress {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 4px;
-      background: linear-gradient(to right, var(--accent), #0ea5e9);
-      z-index: 9999;
-      width: 0%;
-      transition: width 0.1s ease;
+    /* 2. SKILLS (top) */
+    .top-header {
+      background: #161b22;
+      padding: 5px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--text-main);
     }
-
-    /* GLASSMORPHISM CARDS */
-    .card-soft {
-      background: var(--bg-card);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      padding: 1.5rem;
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .card-soft:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
-      border-color: var(--accent);
-    }
-
-    /* NAVBAR */
-    .navbar {
-      background: rgba(248, 250, 252, 0.8);
-      backdrop-filter: blur(15px);
-      border-bottom: 1px solid var(--border-soft);
-    }
-
-    /* HERO SECTION */
-    header#home {
-      min-height: 90vh;
+    .process-row {
       display: flex;
-      align-items: center;
-      background: 
-        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.05) 0px, transparent 50%);
-      padding-top: 80px;
+      justify-content: space-between;
+      border-bottom: 1px solid #21262d;
+      padding: 4px 0;
+      font-size: 0.9rem;
     }
+    .process-row:hover { background: #1f2428; }
+    .col-pid { width: 60px; color: var(--text-muted); }
+    .col-user { width: 80px; color: var(--accent-root); }
+    .col-cpu { width: 60px; color: var(--accent-path); text-align: right; }
+    .col-cmd { flex-grow: 1; padding-left: 20px; font-weight: bold; color: #fff; }
 
-    .hero-title {
-      font-size: clamp(2.5rem, 5vw, 4rem);
-      font-weight: 800;
-      letter-spacing: -0.04em;
+    /* 3. EXPERIENCE (ls -ltr) */
+    .file-list {
+      font-size: 0.95rem;
     }
-
-    .hero-title span { color: var(--accent); }
-
-    /* Terminal UI */
-    .terminal-window {
-      background: #1e293b;
-      border-radius: 12px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      font-family: 'Fira Code', monospace;
-      overflow: hidden;
-    }
-
-    .terminal-header {
-      background: #334155;
-      padding: 10px 15px;
+    .file-row {
       display: flex;
-      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+      font-family: var(--font-stack);
+    }
+    .perms { color: var(--text-muted); margin-right: 15px; }
+    .owner { color: var(--accent-root); margin-right: 15px; }
+    .size { width: 50px; text-align: right; color: var(--text-muted); margin-right: 15px; }
+    .date { color: var(--text-main); margin-right: 15px; width: 100px; }
+    .filename { color: var(--accent-cmd); font-weight: 700; }
+    .file-desc { 
+      width: 100%; 
+      margin-left: 0; 
+      padding-left: 0; 
+      margin-top: 5px; 
+      color: var(--text-muted); 
+      font-size: 0.9rem;
+      border-left: 2px solid #30363d;
+      padding-left: 15px;
     }
 
-    .dot { width: 12px; height: 12px; border-radius: 50%; }
-    .dot-r { background: #ff5f56; }
-    .dot-y { background: #ffbd2e; }
-    .dot-g { background: #27c93f; }
-
-    /* Timeline Styling */
-    .timeline { border-left: 3px solid var(--accent); padding-left: 25px; }
-    .timeline-item { position: relative; margin-bottom: 40px; }
-    .timeline-dot {
-      position: absolute;
-      left: -32px;
-      top: 5px;
-      width: 12px;
-      height: 12px;
-      background: var(--accent);
-      border-radius: 50%;
-      box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.2);
+    @media(min-width: 768px) {
+      .file-desc { margin-left: 310px; width: auto; margin-top: 0; border: none; }
     }
 
-    /* Pills */
-    .pill {
-      background: #fff;
-      border: 1px solid var(--border-soft);
-      padding: 6px 14px;
-      border-radius: 100px;
-      font-size: 0.85rem;
-      display: inline-block;
-      margin: 4px;
-      transition: 0.2s;
+    /* 4. CERTIFICATIONS (df -h / check_certs.sh) */
+    .cert-block {
+      border: 1px solid var(--border);
+      background: #161b22;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 6px;
     }
-    .pill:hover { border-color: var(--accent); color: var(--accent); }
+    .status-ok { color: var(--accent-path); }
 
-    .btn-accent {
-      background: var(--accent);
-      color: white;
-      border-radius: 100px;
-      padding: 12px 28px;
-      font-weight: 600;
-      border: none;
-      transition: 0.3s;
-    }
-    .btn-accent:hover { background: var(--accent-dark); transform: scale(1.05); }
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: var(--bg-term); }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: #484f58; }
 
   </style>
 </head>
 <body>
 
-  <div id="scroll-progress"></div>
-
-  <nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container">
-      <a class="navbar-brand fw-bold text-primary" href="#">DHANUSH</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto fw-medium">
-          <li class="nav-item"><a class="nav-link px-3" href="#about">About</a></li>
-          <li class="nav-item"><a class="nav-link px-3" href="#experience">Experience</a></li>
-          <li class="nav-item"><a class="nav-link px-3" href="#skills">Skills</a></li>
-          <li class="nav-item"><a class="nav-link px-3" href="#contact">Contact</a></li>
-        </ul>
-      </div>
+  <section id="sec-hero">
+    <div class="prompt-line">
+      <span class="user-path">dhanush@bectran:~$</span>
+      <span class="command-text" id="cmd-hero"></span><span class="cursor" id="cursor-hero"></span>
     </div>
-  </nav>
 
-  <header id="home">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-7" data-aos="fade-right" data-aos-delay="200">
-          <div class="badge bg-indigo-100 text-primary mb-3 px-3 py-2 rounded-pill">Available for New Roles</div>
-          <h1 class="hero-title mb-3">DevOps & Cloud <br><span>Infrastructure</span> Engineer</h1>
-          <p class="lead text-muted mb-4" style="max-width: 600px;">
-            I architect resilient cloud systems and automate delivery pipelines. Currently hardening infrastructure and security compliance at <strong>Bectran</strong>.
-          </p>
-          <div class="d-flex gap-3">
-            <a href="#contact" class="btn btn-accent shadow-lg">Work with me</a>
-            <a href="#" class="btn btn-outline-secondary rounded-pill px-4">View CV</a>
-          </div>
-        </div>
-        <div class="col-lg-5 mt-5 mt-lg-0" data-aos="zoom-in" data-aos-delay="400">
-            <div class="terminal-window p-0 shadow-lg">
-                <div class="terminal-header">
-                    <div class="dot dot-r"></div>
-                    <div class="dot dot-y"></div>
-                    <div class="dot dot-g"></div>
-                </div>
-                <div class="p-4 text-white-50 font-monospace" style="font-size: 0.85rem;">
-                    <div><span class="text-success">➜</span> <span class="text-info">~</span> fetch profile</div>
-                    <div class="text-white mt-1">Name: Dhanush Suresh</div>
-                    <div class="text-white">Role: DevOps / SRE</div>
-                    <div class="text-white">Loc: Chicago, IL</div>
-                    <div class="mt-3"><span class="text-success">➜</span> <span class="text-info">~</span> system.check()</div>
-                    <div class="text-success mt-1">✔ Infrastructure as Code: Optimized</div>
-                    <div class="text-success">✔ CI/CD Pipelines: Active</div>
-                    <div class="text-warning">⚠ Security: Hardening in progress...</div>
-                </div>
-            </div>
-        </div>
+    <div class="command-output" id="out-hero">
+      <div class="hero-ascii d-none d-md-block">
+  _____  _                              _     
+ |  __ \| |                            | |    
+ | |  | | |__   __ _ _ __  _   _  ___ | |__  
+ | |  | | '_ \ / _` | '_ \| | | |/ __|| '_ \ 
+ | |__| | | | | (_| | | | | |_| |\__ \| | | |
+ |_____/|_| |_|\__,_|_| |_|\__,_||___/|_| |_|
       </div>
-    </div>
-  </header>
-
-  <section id="about" class="py-5">
-    <div class="container">
-      <div class="row g-4">
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-          <div class="card-soft h-100">
-            <h3 class="h1 fw-bold text-primary">3+</h3>
-            <p class="text-muted mb-0">Years of Infrastructure Experience</p>
-          </div>
-        </div>
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-          <div class="card-soft h-100">
-            <h3 class="h1 fw-bold text-primary">17%</h3>
-            <p class="text-muted mb-0">Avg. Cloud Cost Reduction Achieved</p>
-          </div>
-        </div>
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-          <div class="card-soft h-100">
-            <h3 class="h1 fw-bold text-primary">Zero</h3>
-            <p class="text-muted mb-0">Unplanned Downtime on Managed Clusters</p>
-          </div>
-        </div>
+      <h1 class="mb-3">Dhanush Suresh</h1>
+      <p class="lead text-muted">
+        > DevOps Engineer | SRE | Cybersecurity Enthusiast<br>
+        > Currently focused on CI/CD Automation & Security Hardening
+      </p>
+      
+      <div class="mt-4">
+        <p class="mb-1 text-muted"># Initialize contact protocol:</p>
+        <a href="mailto:dhanushnaidu77@gmail.com" class="me-3">./send_email.sh</a>
+        <a href="https://linkedin.com/in/dhanush--s/" target="_blank" class="me-3">./connect_linkedin.py</a>
+        <a href="assets/Dhanush-Suresh-Resume.pdf" target="_blank">./cat_resume.pdf</a>
       </div>
     </div>
   </section>
 
-  <section id="experience" class="py-5">
-    <div class="container">
-      <h2 class="fw-bold mb-5 text-center" data-aos="fade-up">Professional Journey</h2>
-      <div class="row justify-content-center">
-        <div class="col-lg-9">
-          <div class="timeline">
-            <div class="timeline-item" data-aos="fade-left">
-              <div class="timeline-dot"></div>
-              <span class="text-primary fw-bold">2025 – Present</span>
-              <h4 class="fw-bold mt-1">DevOps Engineer <span class="text-muted fw-normal">@ Bectran</span></h4>
-              <p class="text-muted">Modernizing CI/CD with GitHub Actions and hardening AWS infrastructure. Leading SOC and PCI DSS compliance audits through automated evidence collection and CrowdStrike EDR deployment.</p>
+
+  <section id="sec-skills">
+    <div class="prompt-line">
+      <span class="user-path">dhanush@bectran:~$</span>
+      <span class="command-text" id="cmd-skills"></span><span class="cursor" id="cursor-skills"></span>
+    </div>
+
+    <div class="command-output" id="out-skills">
+      <div class="mb-2 text-muted small">
+        top - 10:23:05 up 3 years, 1 user, load average: 0.15, 0.08, 0.05<br>
+        Tasks: 9 total, 5 running, 4 sleeping, 0 stopped, 0 zombie<br>
+        %Cpu(s): <span class="text-success">98.2 us</span>, 1.2 sy, 0.0 ni, 0.5 id, 0.0 wa, 0.0 hi, 0.1 si
+      </div>
+      
+      <div class="top-header d-flex justify-content-between font-weight-bold mt-3">
+        <span style="width:60px">PID</span>
+        <span style="width:80px">USER</span>
+        <span style="width:60px">PR</span>
+        <span style="width:60px">NI</span>
+        <span style="width:60px">VIRT</span>
+        <span style="width:60px">RES</span>
+        <span style="width:60px; text-align:right">%CPU</span>
+        <span style="flex-grow:1; padding-left:20px">COMMAND</span>
+      </div>
+
+      <div class="process-row">
+        <span class="col-pid">1024</span><span class="col-user">root</span><span class="col-other text-muted">20 0 10G 2G</span><span class="col-cpu">95.0</span><span class="col-cmd">/usr/bin/aws --region us-east-1</span>
+      </div>
+      <div class="process-row">
+        <span class="col-pid">1025</span><span class="col-user">root</span><span class="col-other text-muted">20 0 8G 4G</span><span class="col-cpu">90.2</span><span class="col-cmd">/usr/bin/kubernetes --control-plane</span>
+      </div>
+      <div class="process-row">
+        <span class="col-pid">1026</span><span class="col-user">dhanush</span><span class="col-other text-muted">20 0 500M 100M</span><span class="col-cpu">88.5</span><span class="col-cmd">terraform apply -auto-approve</span>
+      </div>
+      <div class="process-row">
+        <span class="col-pid">1027</span><span class="col-user">dhanush</span><span class="col-other text-muted">20 0 200M 50M</span><span class="col-cpu">85.0</span><span class="col-cmd">python3 automation_script.py</span>
+      </div>
+      <div class="process-row">
+        <span class="col-pid">1028</span><span class="col-user">sec-ops</span><span class="col-other text-muted">20 0 1G 500M</span><span class="col-cpu">82.1</span><span class="col-cmd">crowdstrike-falcon-sensor</span>
+      </div>
+      <div class="process-row">
+        <span class="col-pid">1029</span><span class="col-user">dhanush</span><span class="col-other text-muted">20 0 300M 80M</span><span class="col-cpu">79.4</span><span class="col-cmd">docker-compose up -d</span>
+      </div>
+      <div class="process-row">
+        <span class="col-pid">1030</span><span class="col-user">net-ops</span><span class="col-other text-muted">20 0 100M 20M</span><span class="col-cpu">75.0</span><span class="col-cmd">datadog-agent run</span>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="sec-exp">
+    <div class="prompt-line">
+      <span class="user-path">dhanush@bectran:~$</span>
+      <span class="command-text" id="cmd-exp"></span><span class="cursor" id="cursor-exp"></span>
+    </div>
+
+    <div class="command-output" id="out-exp">
+      <div class="file-list">
+        <div class="mb-3 text-muted">total 3</div>
+        
+        <div class="file-row">
+          <span class="perms">-rwxr-xr-x</span>
+          <span class="owner">root</span>
+          <span class="size">4096</span>
+          <span class="date">Oct 2021</span>
+          <span class="filename">./IIT_Madras_DevOps.sh</span>
+          <div class="file-desc">
+            # Architected AWS infrastructure for 450+ telemetry devices.<br>
+            # Saved 17% monthly costs via spot instances & autoscaling.
+          </div>
+        </div>
+
+        <div class="file-row">
+          <span class="perms">-rwxr-xr-x</span>
+          <span class="owner">dhanush</span>
+          <span class="size">4096</span>
+          <span class="date">Aug 2022</span>
+          <span class="filename">./Donyati_DevOps_Eng.py</span>
+          <div class="file-desc">
+            # Built Jenkins/ArgoCD pipelines for Kubernetes.<br>
+            # Migrated scripts to AWS Lambda & hardened VPCs.
+          </div>
+        </div>
+
+        <div class="file-row">
+          <span class="perms">drwxrwxrwx</span>
+          <span class="owner text-success">current</span>
+          <span class="size">4096</span>
+          <span class="date">Jan 2025</span>
+          <span class="filename text-success">./Bectran_DevOps_Lead/</span>
+          <div class="file-desc text-light">
+            # <b>HEAD pointer</b><br>
+            # Managing SOC & PCI DSS compliance audits.<br>
+            # Implemented Shift-Left security (SAST/DAST).<br>
+            # Configuring AWS WAF & Datadog observability.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-certs">
+    <div class="prompt-line">
+      <span class="user-path">dhanush@bectran:~/certs$</span>
+      <span class="command-text" id="cmd-certs"></span><span class="cursor" id="cursor-certs"></span>
+    </div>
+
+    <div class="command-output" id="out-certs">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="cert-block">
+            <div class="d-flex justify-content-between text-muted small mb-2">
+              <span>[AWS-SAA-C03]</span>
+              <span class="status-ok">ACTIVE</span>
             </div>
-            <div class="timeline-item" data-aos="fade-left">
-                <div class="timeline-dot"></div>
-                <span class="text-primary fw-bold">2022</span>
-                <h4 class="fw-bold mt-1">DevOps Engineer <span class="text-muted fw-normal">@ Donyati</span></h4>
-                <p class="text-muted">Managed multi-stage Docker deployments to Kubernetes using Argo CD and Terraform. Provisioned custom AWS VPCs and automated workflows with Lambda.</p>
+            <h5 class="mb-1 text-white">AWS Solutions Architect Assoc.</h5>
+            <div class="small text-muted">Issuer: Amazon Web Services</div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="cert-block">
+            <div class="d-flex justify-content-between text-muted small mb-2">
+              <span>[Terraform-003]</span>
+              <span class="status-ok">ACTIVE</span>
             </div>
+            <h5 class="mb-1 text-white">HashiCorp Terraform Associate</h5>
+            <div class="small text-muted">Issuer: HashiCorp</div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="cert-block">
+            <div class="d-flex justify-content-between text-muted small mb-2">
+              <span>[SY0-601]</span>
+              <span class="status-ok">ACTIVE</span>
+            </div>
+            <h5 class="mb-1 text-white">CompTIA Security+</h5>
+            <div class="small text-muted">Issuer: CompTIA</div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="cert-block">
+            <div class="d-flex justify-content-between text-muted small mb-2">
+              <span>[AZ-900]</span>
+              <span class="status-ok">ACTIVE</span>
+            </div>
+            <h5 class="mb-1 text-white">Microsoft Azure Fundamentals</h5>
+            <div class="small text-muted">Issuer: Microsoft</div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <section id="skills" class="py-5 bg-white">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-5" data-aos="fade-right">
-                <h2 class="fw-bold mb-4">Tech Stack & Tools</h2>
-                <p class="text-muted">I specialize in the "Shift-Left" philosophy—integrating security and observability into the core of the development lifecycle.</p>
-            </div>
-            <div class="col-lg-7" data-aos="fade-left">
-                <div class="card-soft">
-                    <h6 class="fw-bold text-uppercase small text-muted mb-3">Infrastructure & Orchestration</h6>
-                    <div class="mb-4">
-                        <span class="pill">AWS</span> <span class="pill">Kubernetes</span> <span class="pill">Terraform</span> 
-                        <span class="pill">Ansible</span> <span class="pill">Docker</span> <span class="pill">Linux (RHEL/Ubuntu)</span>
-                    </div>
-                    <h6 class="fw-bold text-uppercase small text-muted mb-3">Security & Monitoring</h6>
-                    <div>
-                        <span class="pill">Datadog</span> <span class="pill">CrowdStrike</span> <span class="pill">AWS WAF</span> 
-                        <span class="pill">SAST/DAST</span> <span class="pill">Prometheus</span> <span class="pill">Grafana</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-  </section>
-
-  <section id="contact" class="py-5 mb-5">
-    <div class="container">
-      <div class="card-soft bg-primary text-white p-5 text-center" data-aos="zoom-in">
-        <h2 class="fw-bold mb-3">Ready to scale?</h2>
-        <p class="mb-4 opacity-75">Let's discuss how I can help your team with automation, cloud migration, or security hardening.</p>
-        <a href="mailto:dhanushnaidu77@gmail.com" class="btn btn-light rounded-pill px-5 py-3 fw-bold">Email Me</a>
+      
+      <div class="mt-4 text-center">
+        <p class="text-muted">-- End of stream --</p>
+        <a href="#sec-hero" class="btn btn-outline-secondary btn-sm" style="border-radius:0;">^C (Return to Top)</a>
       </div>
     </div>
   </section>
 
-  <footer class="py-4 text-center text-muted border-top">
-    <div class="container">
-        <div class="d-flex justify-content-center gap-4 mb-3">
-            <a href="https://linkedin.com/in/dhanush--s/" class="text-muted h4"><i class="bi bi-linkedin"></i></a>
-            <a href="https://github.com/dhanushnaidu77" class="text-muted h4"><i class="bi bi-github"></i></a>
-        </div>
-        <small>© <span id="year"></span> Dhanush Suresh. Built with Precision.</small>
-    </div>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    // Initialize Animations
-    AOS.init({
-      duration: 1000,
-      once: true,
-      offset: 150
+    // Configuration for each section
+    const sections = [
+      { id: 'hero',   command: 'whoami' },
+      { id: 'skills', command: 'top -b -n 1 | head -n 15' },
+      { id: 'exp',    command: 'ls -ltr /home/dhanush/experience' },
+      { id: 'certs',  command: './verify_certs.sh --verbose' }
+    ];
+
+    // Typewriter effect function
+    function typeCommand(elementId, text, speed, callback) {
+      let i = 0;
+      const element = document.getElementById(elementId);
+      const cursor = document.getElementById('cursor-' + elementId.split('-')[1]);
+      
+      cursor.classList.add('typing'); // Stop blinking while typing
+      
+      function type() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        } else {
+          cursor.classList.remove('typing'); // Resume blinking
+          if (callback) callback();
+        }
+      }
+      type();
+    }
+
+    // Intersection Observer to trigger typing on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const sectionId = entry.target.id.replace('sec-', '');
+          const config = sections.find(s => s.id === sectionId);
+          const cmdElement = document.getElementById('cmd-' + sectionId);
+          
+          // Only type if empty (haven't run yet)
+          if (cmdElement && cmdElement.innerHTML === '') {
+            typeCommand('cmd-' + sectionId, config.command, 50, () => {
+              // Reveal output after typing finishes
+              document.getElementById('out-' + sectionId).classList.add('visible');
+            });
+          }
+        }
+      });
+    }, { threshold: 0.4 }); // Trigger when 40% of section is visible
+
+    // Start observing
+    sections.forEach(sec => {
+      const el = document.getElementById('sec-' + sec.id);
+      if(el) observer.observe(el);
     });
-
-    // Scroll Progress
-    window.onscroll = function() {
-      let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-      let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      let scrolled = (winScroll / height) * 100;
-      document.getElementById("scroll-progress").style.width = scrolled + "%";
-    };
-
-    document.getElementById("year").textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
