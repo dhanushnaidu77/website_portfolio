@@ -90,6 +90,49 @@
     }
     .command-output.visible { opacity: 1; transform: translateY(0); }
 
+    /* --- BOOT SCREEN OVERLAY --- */
+    #boot-screen {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-term);
+      z-index: 99999;
+      padding: 2rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end; /* Text flows from bottom like logs */
+    }
+    .log-line { margin-bottom: 2px; }
+    .log-time { color: var(--color-cmd); margin-right: 10px; }
+    .log-ok { color: var(--color-success); font-weight: bold; }
+    .log-warn { color: var(--color-warn); }
+
+    /* --- NETWORK MONITOR SIDEBAR --- */
+    .net-mon {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 280px;
+      height: 350px;
+      font-size: 0.65rem;
+      color: #45475a; /* Very faint text */
+      opacity: 0.6;
+      overflow: hidden;
+      z-index: -1; /* Behind everything */
+      pointer-events: none;
+      font-family: 'JetBrains Mono', monospace;
+      display: none; /* Hidden on mobile */
+      text-align: right;
+    }
+
+    @media(min-width: 1400px) {
+      .net-mon { display: block; }
+    }
+
     /* --- SECTION SPECIFIC UI --- */
 
     /* 1. HERO */
@@ -199,6 +242,12 @@
   </style>
 </head>
 <body>
+
+  <div id="boot-screen">
+    <div id="boot-text"></div>
+  </div>
+
+  <div class="net-mon" id="net-mon"></div>
 
   <section id="sec-hero">
     <div class="prompt-line">
@@ -320,6 +369,59 @@
     </div>
   </section>
 
+  <section id="sec-k8s">
+    <div class="prompt-line">
+      <span class="user-path">dhanush@bectran:~$</span>
+      <span class="command-text" id="cmd-k8s"></span><span class="cursor" id="cursor-k8s"></span>
+    </div>
+
+    <div class="command-output" id="out-k8s">
+      <div class="d-flex text-muted mb-2 small fw-bold" style="border-bottom: 1px solid var(--border); padding-bottom: 5px;">
+        <span style="width: 25%;">NAME</span>
+        <span style="width: 15%;">READY</span>
+        <span style="width: 20%;">STATUS</span>
+        <span style="width: 15%;">RESTARTS</span>
+        <span style="width: 25%;">AGE</span>
+      </div>
+
+      <div class="d-flex mb-2 small align-items-center">
+        <span style="width: 25%; color: var(--color-cmd);">sales-dashboard-api</span>
+        <span style="width: 15%; color: var(--text-muted);">1/1</span>
+        <span style="width: 20%; color: var(--color-success);">Running</span>
+        <span style="width: 15%; color: var(--text-muted);">0</span>
+        <span style="width: 25%; color: var(--text-muted);">14d</span>
+      </div>
+      <div class="ms-3 mb-3 small text-muted border-start border-secondary ps-2">
+        > AI-driven dashboard using Python/OpenSearch.<br>
+        > <a href="#">[View Config]</a>
+      </div>
+
+      <div class="d-flex mb-2 small align-items-center">
+        <span style="width: 25%; color: var(--color-cmd);">ransomware-sim-job</span>
+        <span style="width: 15%; color: var(--text-muted);">0/1</span>
+        <span style="width: 20%; color: var(--text-muted);">Completed</span>
+        <span style="width: 15%; color: var(--text-muted);">0</span>
+        <span style="width: 25%; color: var(--text-muted);">5d</span>
+      </div>
+      <div class="ms-3 mb-3 small text-muted border-start border-secondary ps-2">
+        > Incident response simulation for security audit.<br>
+        > <a href="#">[View Logs]</a>
+      </div>
+
+      <div class="d-flex mb-2 small align-items-center">
+        <span style="width: 25%; color: var(--color-cmd);">terraform-infra-prov</span>
+        <span style="width: 15%; color: var(--text-muted);">2/2</span>
+        <span style="width: 20%; color: var(--color-success);">Running</span>
+        <span style="width: 15%; color: var(--text-muted);">3</span>
+        <span style="width: 25%; color: var(--text-muted);">24d</span>
+      </div>
+      <div class="ms-3 mb-3 small text-muted border-start border-secondary ps-2">
+        > Automated AWS provisioning via GitHub Actions.<br>
+        > <a href="#">[View Repo]</a>
+      </div>
+    </div>
+  </section>
+
   <section id="sec-certs">
     <div class="prompt-line">
       <span class="user-path">dhanush@bectran:~/certs$</span>
@@ -396,11 +498,59 @@
   </div>
 
   <script>
-    // 1. SCROLL TYPING ENGINE
+    // 1. BOOT SEQUENCE LOGIC
+    const bootText = [
+      "[  0.000000] Linux version 6.8.0-generic (dhanush@server)",
+      "[  0.002134] Command line: BOOT_IMAGE=/boot/vmlinuz root=UUID=portfolio-v2 ro quiet splash",
+      "[  0.045420] Kernel command line: init_skills=true load_experience=1",
+      "[  0.112300] secureboot: Secure boot enabled",
+      "[  0.243000] Detected CPU: Dhanush Neural Engine (1 User, 100% Focus)",
+      "[  0.450000] Memory: 32GB RAM allocated to Kubernetes Clusters",
+      "[  0.890000] TCP/IP hash table entries: 65536 (order: 6, 262144 bytes)",
+      "[  1.200000] mounting filesystems...",
+      "[  1.500000] EXT4-fs (sda1): mounted filesystem with ordered data mode",
+      "[  1.800000] systemd[1]: Starting DevOps Orchestration Service...",
+      "[  2.100000] systemd[1]: Started Docker Application Container Engine.",
+      "[  2.400000] k8s-agent: connecting to master node...",
+      "[  2.800000] k8s-agent: node 'dhanush-portfolio' is Ready",
+      "[  3.100000] Loading interface modules: [HTML5] [CSS3] [JS]",
+      "[  3.500000] Welcome to Dhanush OS."
+    ];
+
+    const bootScreen = document.getElementById('boot-screen');
+    const bootContainer = document.getElementById('boot-text');
+    let bootIndex = 0;
+
+    function runBoot() {
+      if (bootIndex < bootText.length) {
+        const line = document.createElement('div');
+        line.className = 'log-line';
+        
+        let content = bootText[bootIndex];
+        if(content.includes('Mounted') || content.includes('Started') || content.includes('Ready')) {
+            content = content.replace(/(Mounted|Started|Ready)/, '<span class="log-ok">$1</span>');
+        }
+        
+        line.innerHTML = `<span class="log-time">[ ${(bootIndex * 0.235).toFixed(6)} ]</span> ${content}`;
+        bootContainer.appendChild(line);
+        
+        bootIndex++;
+        setTimeout(runBoot, Math.random() * 100 + 30);
+      } else {
+        setTimeout(() => {
+          bootScreen.style.transition = 'opacity 0.5s';
+          bootScreen.style.opacity = '0';
+          setTimeout(() => { bootScreen.style.display = 'none'; }, 500);
+        }, 800);
+      }
+    }
+
+    // 2. SCROLL TYPING ENGINE
     const sections = [
       { id: 'hero',   command: 'whoami' },
       { id: 'skills', command: 'top -b -n 1 | head -n 10' },
       { id: 'exp',    command: 'ls -ltr /home/dhanush/experience' },
+      { id: 'k8s',    command: 'kubectl get pods --namespace=projects' },
       { id: 'certs',  command: './verify_certs.sh --verbose' }
     ];
 
@@ -444,12 +594,40 @@
       if(el) observer.observe(el);
     });
 
-    // 2. STATUS BAR CLOCK
+    // 3. STATUS BAR CLOCK
     setInterval(() => {
       document.getElementById('clock').innerText = new Date().toLocaleTimeString();
     }, 1000);
 
-    // 3. INTERACTIVE TERMINAL
+    // 4. NETWORK TRAFFIC SIMULATION (Background)
+    const netMon = document.getElementById('net-mon');
+    function addTraffic() {
+      const ips = ['192.168.1.105', '10.0.0.5', '172.16.0.1', '127.0.0.1', '45.33.22.11'];
+      const methods = ['GET', 'POST', 'ACK', 'SYN', 'FIN'];
+      const ports = ['443', '80', '22', '8080', '3000'];
+      
+      const randomIP = ips[Math.floor(Math.random() * ips.length)];
+      const randomMethod = methods[Math.floor(Math.random() * methods.length)];
+      const randomPort = ports[Math.floor(Math.random() * ports.length)];
+      
+      const div = document.createElement('div');
+      div.innerText = `> ${randomMethod} packet from ${randomIP}:${randomPort}`;
+      netMon.prepend(div);
+      
+      if (netMon.children.length > 20) {
+        netMon.removeChild(netMon.lastChild);
+      }
+      
+      setTimeout(addTraffic, Math.random() * 2000 + 500);
+    }
+    
+    // Start Boot & Network Monitor on Load
+    window.addEventListener('load', () => {
+      runBoot();
+      setTimeout(addTraffic, 4000); // Start logs after boot finishes
+    });
+
+    // 5. INTERACTIVE TERMINAL
     const input = document.getElementById('cli-input');
     const output = document.getElementById('cli-output');
 
@@ -474,7 +652,7 @@
             <div><span style="color:var(--color-cmd)">clear</span>    - Clear terminal</div>
           `;
         } else if (cmd === 'ls') {
-          response = '<span style="color:var(--color-purple)">about/  skills/  experience/  certifications/</span>';
+          response = '<span style="color:var(--color-purple)">about/  skills/  experience/  projects/  certifications/</span>';
         } else if (cmd === 'whoami') {
           response = 'guest user (unauthorized)';
         } else if (cmd === 'contact') {
