@@ -52,6 +52,8 @@
       justify-content: center;
       max-width: 1000px;
       margin: 0 auto;
+      position: relative;
+      z-index: 2; /* Keep content above background traffic */
     }
 
     a { color: var(--color-cmd); text-decoration: none; border-bottom: 1px dotted var(--color-cmd); transition: all 0.2s; }
@@ -110,26 +112,28 @@
     .log-ok { color: var(--color-success); font-weight: bold; }
     .log-warn { color: var(--color-warn); }
 
-    /* --- NETWORK MONITOR SIDEBAR --- */
+    /* --- NETWORK MONITOR SIDEBAR (ENHANCED) --- */
     .net-mon {
       position: fixed;
       right: 20px;
       top: 50%;
       transform: translateY(-50%);
-      width: 280px;
-      height: 350px;
-      font-size: 0.65rem;
-      color: #45475a; /* Very faint text */
-      opacity: 0.6;
+      width: 350px; /* Wider */
+      height: 80vh; /* Taller */
+      font-size: 0.85rem; /* Larger font */
+      color: rgba(137, 180, 250, 0.4); /* Visible Pastel Blue with slight transparency */
       overflow: hidden;
-      z-index: -1; /* Behind everything */
+      z-index: 0; /* Behind main content but visible */
       pointer-events: none;
       font-family: 'JetBrains Mono', monospace;
-      display: none; /* Hidden on mobile */
+      display: none; 
       text-align: right;
+      mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
     }
 
-    @media(min-width: 1400px) {
+    /* Shows on laptops and up now */
+    @media(min-width: 992px) {
       .net-mon { display: block; }
     }
 
@@ -287,7 +291,7 @@
     <div class="command-output" id="out-skills">
       <div class="mb-3 text-muted small">
         top - 10:23:05 up 420 days, 1 user, load average: 0.15, 0.08, 0.05<br>
-        Tasks: <span style="color:var(--color-cmd)">8 running</span>, 42 sleeping<br>
+        Tasks: <span style="color:var(--color-cmd)">12 running</span>, 42 sleeping<br>
         %Cpu(s): <span style="color:var(--color-success)">98.2 us</span>, 1.2 sy, 0.0 ni, 0.5 id
       </div>
       
@@ -318,6 +322,24 @@
       </div>
       <div class="process-row">
         <span class="col-pid">1342</span><span class="col-user">dhanush</span><span class="col-other text-muted">20 300M 80M</span><span class="col-cpu">79.4</span><span class="col-cmd">docker-compose up -d</span>
+      </div>
+      <div class="process-row">
+        <span class="col-pid">1343</span><span class="col-user">ci-cd</span><span class="col-other text-muted">20 400M 60M</span><span class="col-cpu">75.2</span><span class="col-cmd">github-actions-runner --scale</span>
+      </div>
+      <div class="process-row">
+        <span class="col-pid">1344</span><span class="col-user">root</span><span class="col-other text-muted">20 150M 30M</span><span class="col-cpu">68.0</span><span class="col-cmd">/bin/bash deploy.sh</span>
+      </div>
+      <div class="process-row">
+        <span class="col-pid">1345</span><span class="col-user">monitor</span><span class="col-other text-muted">20 800M 200M</span><span class="col-cpu">65.5</span><span class="col-cmd">grafana-server --config</span>
+      </div>
+      <div class="process-row">
+        <span class="col-pid">1346</span><span class="col-user">db-adm</span><span class="col-other text-muted">20 2G 1G</span><span class="col-cpu">62.1</span><span class="col-cmd">postgres: writer process</span>
+      </div>
+      <div class="process-row">
+        <span class="col-pid">1347</span><span class="col-user">dhanush</span><span class="col-other text-muted">20 50M 10M</span><span class="col-cpu">60.0</span><span class="col-cmd">git commit -m "fix: pipelines"</span>
+      </div>
+      <div class="process-row">
+        <span class="col-pid">1348</span><span class="col-user">dhanush</span><span class="col-other text-muted">20 300M 40M</span><span class="col-cpu">58.4</span><span class="col-cmd">go run main.go</span>
       </div>
     </div>
   </section>
@@ -548,7 +570,7 @@
     // 2. SCROLL TYPING ENGINE
     const sections = [
       { id: 'hero',   command: 'whoami' },
-      { id: 'skills', command: 'top -b -n 1 | head -n 10' },
+      { id: 'skills', command: 'top -b -n 1 | head -n 17' },
       { id: 'exp',    command: 'ls -ltr /home/dhanush/experience' },
       { id: 'k8s',    command: 'kubectl get pods --namespace=projects' },
       { id: 'certs',  command: './verify_certs.sh --verbose' }
@@ -599,12 +621,12 @@
       document.getElementById('clock').innerText = new Date().toLocaleTimeString();
     }, 1000);
 
-    // 4. NETWORK TRAFFIC SIMULATION (Background)
+    // 4. NETWORK TRAFFIC SIMULATION (Background - ENHANCED)
     const netMon = document.getElementById('net-mon');
     function addTraffic() {
-      const ips = ['192.168.1.105', '10.0.0.5', '172.16.0.1', '127.0.0.1', '45.33.22.11'];
-      const methods = ['GET', 'POST', 'ACK', 'SYN', 'FIN'];
-      const ports = ['443', '80', '22', '8080', '3000'];
+      const ips = ['192.168.1.105', '10.0.0.5', '172.16.0.1', '127.0.0.1', '45.33.22.11', '10.10.20.5'];
+      const methods = ['GET', 'POST', 'ACK', 'SYN', 'FIN', 'PSH'];
+      const ports = ['443', '80', '22', '8080', '3000', '5432'];
       
       const randomIP = ips[Math.floor(Math.random() * ips.length)];
       const randomMethod = methods[Math.floor(Math.random() * methods.length)];
@@ -614,11 +636,12 @@
       div.innerText = `> ${randomMethod} packet from ${randomIP}:${randomPort}`;
       netMon.prepend(div);
       
-      if (netMon.children.length > 20) {
+      if (netMon.children.length > 25) {
         netMon.removeChild(netMon.lastChild);
       }
       
-      setTimeout(addTraffic, Math.random() * 2000 + 500);
+      // Faster speed: 200ms to 800ms
+      setTimeout(addTraffic, Math.random() * 600 + 200);
     }
     
     // Start Boot & Network Monitor on Load
