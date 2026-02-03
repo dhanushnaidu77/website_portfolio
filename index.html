@@ -7,21 +7,29 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 
   <style>
     :root {
-      --bg-term: #0d1117; /* GitHub Dark Dimmed */
-      --text-main: #c9d1d9;
-      --text-muted: #8b949e;
-      --accent-cmd: #58a6ff; /* Blue for commands */
-      --accent-path: #7ee787; /* Green for user/path */
-      --accent-root: #d2a8ff; /* Purple for root */
-      --border: #30363d;
-      --font-stack: 'Fira Code', monospace;
+      /* PASTEL NIGHT THEME */
+      --bg-term: #1e1e2e;       /* Deep Charcoal */
+      --bg-panel: #252538;      /* Slightly lighter panel */
+      --text-main: #cdd6f4;     /* Soft White */
+      --text-muted: #9399b2;    /* Muted Lavender Gray */
+      
+      /* Accents */
+      --color-cmd: #89b4fa;     /* Pastel Blue */
+      --color-path: #f5c2e7;    /* Pastel Pink */
+      --color-success: #a6e3a1; /* Pastel Mint */
+      --color-warn: #f9e2af;    /* Pastel Yellow */
+      --color-error: #f38ba8;   /* Pastel Red */
+      --color-purple: #cba6f7;  /* Pastel Mauve */
+
+      --font-stack: 'JetBrains Mono', monospace;
+      --border: #313244;
     }
 
     body {
@@ -30,13 +38,14 @@
       font-family: var(--font-stack);
       margin: 0;
       padding: 0;
+      padding-bottom: 40px; /* Space for Status Bar */
       overflow-x: hidden;
       line-height: 1.6;
     }
 
     /* --- LAYOUT UTILITIES --- */
     section {
-      min-height: 90vh; /* Each command takes up a full screen feel */
+      min-height: 85vh;
       padding: 2rem 1rem;
       display: flex;
       flex-direction: column;
@@ -45,21 +54,20 @@
       margin: 0 auto;
     }
 
-    a { color: var(--accent-cmd); text-decoration: none; border-bottom: 1px dotted var(--accent-cmd); }
-    a:hover { background: rgba(88, 166, 255, 0.15); }
+    a { color: var(--color-cmd); text-decoration: none; border-bottom: 1px dotted var(--color-cmd); transition: all 0.2s; }
+    a:hover { background: rgba(137, 180, 250, 0.15); color: #fff; }
 
     /* --- TERMINAL ELEMENTS --- */
     .prompt-line {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
       flex-wrap: wrap;
     }
 
-    .user-path { color: var(--accent-path); font-weight: 700; margin-right: 10px; }
-    .separator { color: var(--text-muted); margin-right: 10px; }
-    .command-text { color: var(--accent-cmd); font-weight: 700; }
+    .user-path { color: var(--color-path); font-weight: 700; margin-right: 10px; }
+    .command-text { color: var(--color-cmd); font-weight: 700; }
     
     /* Blinking Cursor */
     .cursor {
@@ -72,10 +80,9 @@
       margin-left: 5px;
     }
     .cursor.typing { animation: none; opacity: 1; }
-
     @keyframes blink { 50% { opacity: 0; } }
 
-    /* Output Section (Hidden initially) */
+    /* Output Animation */
     .command-output {
       opacity: 0;
       transform: translateY(10px);
@@ -85,81 +92,109 @@
 
     /* --- SECTION SPECIFIC UI --- */
 
-    /* 1. HERO (whoami) */
+    /* 1. HERO */
     .hero-ascii {
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      font-size: 0.75rem;
+      color: var(--color-purple);
       white-space: pre;
       margin-bottom: 2rem;
-      overflow-x: hidden;
+      line-height: 1.2;
     }
 
-    /* 2. SKILLS (top) */
+    /* 2. SKILLS (TOP) */
     .top-header {
-      background: #161b22;
-      padding: 5px;
+      background: var(--bg-panel);
+      padding: 8px;
       border-bottom: 1px solid var(--border);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-main);
+      border-radius: 4px 4px 0 0;
     }
     .process-row {
       display: flex;
       justify-content: space-between;
-      border-bottom: 1px solid #21262d;
-      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+      padding: 6px 0;
       font-size: 0.9rem;
+      transition: background 0.2s;
     }
-    .process-row:hover { background: #1f2428; }
+    .process-row:hover { background: #313244; }
     .col-pid { width: 60px; color: var(--text-muted); }
-    .col-user { width: 80px; color: var(--accent-root); }
-    .col-cpu { width: 60px; color: var(--accent-path); text-align: right; }
-    .col-cmd { flex-grow: 1; padding-left: 20px; font-weight: bold; color: #fff; }
+    .col-user { width: 80px; color: var(--color-purple); }
+    .col-cpu { width: 60px; color: var(--color-success); text-align: right; }
+    .col-cmd { flex-grow: 1; padding-left: 20px; font-weight: bold; color: var(--text-main); }
 
-    /* 3. EXPERIENCE (ls -ltr) */
-    .file-list {
-      font-size: 0.95rem;
-    }
+    /* 3. EXPERIENCE (LS) */
     .file-row {
       display: flex;
       flex-wrap: wrap;
-      margin-bottom: 8px;
-      font-family: var(--font-stack);
+      margin-bottom: 10px;
+      padding: 5px;
+      border-radius: 4px;
     }
-    .perms { color: var(--text-muted); margin-right: 15px; }
-    .owner { color: var(--accent-root); margin-right: 15px; }
-    .size { width: 50px; text-align: right; color: var(--text-muted); margin-right: 15px; }
+    .file-row:hover { background: rgba(255,255,255,0.03); }
+    .perms { color: var(--text-muted); margin-right: 15px; font-size: 0.9rem; }
+    .owner { color: var(--color-path); margin-right: 15px; }
     .date { color: var(--text-main); margin-right: 15px; width: 100px; }
-    .filename { color: var(--accent-cmd); font-weight: 700; }
+    .filename { color: var(--color-cmd); font-weight: 700; }
+    .filename.dir { color: var(--color-success); }
     .file-desc { 
       width: 100%; 
-      margin-left: 0; 
-      padding-left: 0; 
       margin-top: 5px; 
       color: var(--text-muted); 
       font-size: 0.9rem;
-      border-left: 2px solid #30363d;
+      border-left: 2px solid var(--border);
       padding-left: 15px;
     }
-
     @media(min-width: 768px) {
       .file-desc { margin-left: 310px; width: auto; margin-top: 0; border: none; }
     }
 
-    /* 4. CERTIFICATIONS (df -h / check_certs.sh) */
+    /* 4. CERTS */
     .cert-block {
       border: 1px solid var(--border);
-      background: #161b22;
+      background: var(--bg-panel);
       padding: 15px;
       margin-bottom: 15px;
-      border-radius: 6px;
+      border-radius: 8px;
+      transition: transform 0.2s, border-color 0.2s;
     }
-    .status-ok { color: var(--accent-path); }
+    .cert-block:hover { transform: translateY(-2px); border-color: var(--color-purple); }
+    .status-ok { color: var(--color-success); background: rgba(166, 227, 161, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; }
 
-    /* Scrollbar Styling */
-    ::-webkit-scrollbar { width: 10px; }
-    ::-webkit-scrollbar-track { background: var(--bg-term); }
-    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 5px; }
-    ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+    /* --- INTERACTIVE INPUT --- */
+    #cli-input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: var(--font-stack);
+      font-size: 1.1rem;
+      outline: none;
+      flex-grow: 1;
+      caret-color: var(--color-cmd);
+    }
+    #cli-output { margin-bottom: 2rem; }
+
+    /* --- STATUS BAR (FOOTER) --- */
+    .status-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 32px;
+      background: #181825;
+      display: flex;
+      align-items: center;
+      font-size: 0.8rem;
+      z-index: 9999;
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+    }
+    .sb-section { padding: 0 15px; height: 100%; display: flex; align-items: center; }
+    .sb-blue { background: var(--color-cmd); color: #1e1e2e; font-weight: bold; }
+    .sb-purple { background: var(--color-purple); color: #1e1e2e; }
+    .sb-dark { color: var(--text-muted); flex-grow: 1; }
+    .sb-green { background: var(--color-success); color: #1e1e2e; font-weight: bold; }
 
   </style>
 </head>
@@ -173,23 +208,21 @@
 
     <div class="command-output" id="out-hero">
       <div class="hero-ascii d-none d-md-block">
-  _____  _                              _     
- |  __ \| |                            | |    
- | |  | | |__   __ _ _ __  _   _  ___ | |__  
- | |  | | '_ \ / _` | '_ \| | | |/ __|| '_ \ 
- | |__| | | | | (_| | | | | |_| |\__ \| | | |
- |_____/|_| |_|\__,_|_| |_|\__,_||___/|_| |_|
+   ___  _                       _     
+  / _ \| |__   __ _ _ __  _   _| |__  
+ | | | | '_ \ / _` | '_ \| | | | '_ \ 
+ | |_| | | | | (_| | | | | |_| | | | |
+  \___/|_| |_|\__,_|_| |_|\__,_|_| |_|
       </div>
-      <h1 class="mb-3">Dhanush Suresh</h1>
+      <h1 class="mb-3" style="color: var(--text-main)">Dhanush Suresh</h1>
       <p class="lead text-muted">
         > DevOps Engineer | SRE | Cybersecurity Enthusiast<br>
-        > Currently focused on CI/CD Automation & Security Hardening
+        > <span style="color: var(--color-success)">"Automating the boring stuff, securing the important stuff."</span>
       </p>
       
-      <div class="mt-4">
-        <p class="mb-1 text-muted"># Initialize contact protocol:</p>
-        <a href="mailto:dhanushnaidu77@gmail.com" class="me-3">./send_email.sh</a>
-        <a href="https://linkedin.com/in/dhanush--s/" target="_blank" class="me-3">./connect_linkedin.py</a>
+      <div class="mt-5 d-flex gap-3 flex-wrap">
+        <a href="mailto:dhanushnaidu77@gmail.com">./send_email.sh</a>
+        <a href="https://linkedin.com/in/dhanush--s/" target="_blank">./connect_linkedin.py</a>
         <a href="assets/Dhanush-Suresh-Resume.pdf" target="_blank">./cat_resume.pdf</a>
       </div>
     </div>
@@ -203,17 +236,16 @@
     </div>
 
     <div class="command-output" id="out-skills">
-      <div class="mb-2 text-muted small">
-        top - 10:23:05 up 3 years, 1 user, load average: 0.15, 0.08, 0.05<br>
-        Tasks: 9 total, 5 running, 4 sleeping, 0 stopped, 0 zombie<br>
-        %Cpu(s): <span class="text-success">98.2 us</span>, 1.2 sy, 0.0 ni, 0.5 id, 0.0 wa, 0.0 hi, 0.1 si
+      <div class="mb-3 text-muted small">
+        top - 10:23:05 up 420 days, 1 user, load average: 0.15, 0.08, 0.05<br>
+        Tasks: <span style="color:var(--color-cmd)">8 running</span>, 42 sleeping<br>
+        %Cpu(s): <span style="color:var(--color-success)">98.2 us</span>, 1.2 sy, 0.0 ni, 0.5 id
       </div>
       
-      <div class="top-header d-flex justify-content-between font-weight-bold mt-3">
+      <div class="top-header d-flex justify-content-between font-weight-bold">
         <span style="width:60px">PID</span>
         <span style="width:80px">USER</span>
         <span style="width:60px">PR</span>
-        <span style="width:60px">NI</span>
         <span style="width:60px">VIRT</span>
         <span style="width:60px">RES</span>
         <span style="width:60px; text-align:right">%CPU</span>
@@ -221,25 +253,22 @@
       </div>
 
       <div class="process-row">
-        <span class="col-pid">1024</span><span class="col-user">root</span><span class="col-other text-muted">20 0 10G 2G</span><span class="col-cpu">95.0</span><span class="col-cmd">/usr/bin/aws --region us-east-1</span>
+        <span class="col-pid">1337</span><span class="col-user">root</span><span class="col-other text-muted">20 10G 2G</span><span class="col-cpu">95.0</span><span class="col-cmd">/usr/bin/aws --region us-east-1</span>
       </div>
       <div class="process-row">
-        <span class="col-pid">1025</span><span class="col-user">root</span><span class="col-other text-muted">20 0 8G 4G</span><span class="col-cpu">90.2</span><span class="col-cmd">/usr/bin/kubernetes --control-plane</span>
+        <span class="col-pid">1338</span><span class="col-user">root</span><span class="col-other text-muted">20 8G 4G</span><span class="col-cpu">92.5</span><span class="col-cmd">/bin/kubernetes --control-plane</span>
       </div>
       <div class="process-row">
-        <span class="col-pid">1026</span><span class="col-user">dhanush</span><span class="col-other text-muted">20 0 500M 100M</span><span class="col-cpu">88.5</span><span class="col-cmd">terraform apply -auto-approve</span>
+        <span class="col-pid">1339</span><span class="col-user">dhanush</span><span class="col-other text-muted">20 500M 100M</span><span class="col-cpu">88.5</span><span class="col-cmd">terraform apply -auto-approve</span>
       </div>
       <div class="process-row">
-        <span class="col-pid">1027</span><span class="col-user">dhanush</span><span class="col-other text-muted">20 0 200M 50M</span><span class="col-cpu">85.0</span><span class="col-cmd">python3 automation_script.py</span>
+        <span class="col-pid">1340</span><span class="col-user">dhanush</span><span class="col-other text-muted">20 200M 50M</span><span class="col-cpu">85.0</span><span class="col-cmd">python3 automation_script.py</span>
       </div>
       <div class="process-row">
-        <span class="col-pid">1028</span><span class="col-user">sec-ops</span><span class="col-other text-muted">20 0 1G 500M</span><span class="col-cpu">82.1</span><span class="col-cmd">crowdstrike-falcon-sensor</span>
+        <span class="col-pid">1341</span><span class="col-user">sec-ops</span><span class="col-other text-muted">20 1G 500M</span><span class="col-cpu">82.1</span><span class="col-cmd">crowdstrike-falcon-sensor</span>
       </div>
       <div class="process-row">
-        <span class="col-pid">1029</span><span class="col-user">dhanush</span><span class="col-other text-muted">20 0 300M 80M</span><span class="col-cpu">79.4</span><span class="col-cmd">docker-compose up -d</span>
-      </div>
-      <div class="process-row">
-        <span class="col-pid">1030</span><span class="col-user">net-ops</span><span class="col-other text-muted">20 0 100M 20M</span><span class="col-cpu">75.0</span><span class="col-cmd">datadog-agent run</span>
+        <span class="col-pid">1342</span><span class="col-user">dhanush</span><span class="col-other text-muted">20 300M 80M</span><span class="col-cpu">79.4</span><span class="col-cmd">docker-compose up -d</span>
       </div>
     </div>
   </section>
@@ -252,47 +281,41 @@
     </div>
 
     <div class="command-output" id="out-exp">
-      <div class="file-list">
-        <div class="mb-3 text-muted">total 3</div>
-        
-        <div class="file-row">
-          <span class="perms">-rwxr-xr-x</span>
-          <span class="owner">root</span>
-          <span class="size">4096</span>
-          <span class="date">Oct 2021</span>
-          <span class="filename">./IIT_Madras_DevOps.sh</span>
-          <div class="file-desc">
-            # Architected AWS infrastructure for 450+ telemetry devices.<br>
-            # Saved 17% monthly costs via spot instances & autoscaling.
-          </div>
+      <div class="mb-3 text-muted">total 3</div>
+      
+      <div class="file-row">
+        <span class="perms">-rwxr-xr-x</span>
+        <span class="owner">root</span>
+        <span class="date">Oct 2021</span>
+        <span class="filename">./IIT_Madras_DevOps.sh</span>
+        <div class="file-desc">
+          # Architected AWS infrastructure for telemetry devices.<br>
+          # <span style="color:var(--color-warn)">Reduced cloud costs by 17%</span> via spot instances.
         </div>
+      </div>
 
-        <div class="file-row">
-          <span class="perms">-rwxr-xr-x</span>
-          <span class="owner">dhanush</span>
-          <span class="size">4096</span>
-          <span class="date">Aug 2022</span>
-          <span class="filename">./Donyati_DevOps_Eng.py</span>
-          <div class="file-desc">
-            # Built Jenkins/ArgoCD pipelines for Kubernetes.<br>
-            # Migrated scripts to AWS Lambda & hardened VPCs.
-          </div>
+      <div class="file-row">
+        <span class="perms">-rwxr-xr-x</span>
+        <span class="owner">dhanush</span>
+        <span class="date">Aug 2022</span>
+        <span class="filename">./Donyati_DevOps_Eng.py</span>
+        <div class="file-desc">
+          # CI/CD pipelines via Jenkins/ArgoCD.<br>
+          # Migrated automation to AWS Lambda & hardened VPCs.
         </div>
+      </div>
 
-        <div class="file-row">
-          <span class="perms">drwxrwxrwx</span>
-          <span class="owner text-success">current</span>
-          <span class="size">4096</span>
-          <span class="date">Jan 2025</span>
-          <span class="filename text-success">./Bectran_DevOps_Lead/</span>
-          <div class="file-desc text-light">
-            # <b>HEAD pointer</b><br>
-            # Managing SOC & PCI DSS compliance audits.<br>
-            # Implemented Shift-Left security (SAST/DAST).<br>
-            # Configuring AWS WAF & Datadog observability.
-          </div>
+      <div class="file-row">
+        <span class="perms">drwxrwxrwx</span>
+        <span class="owner" style="color:var(--color-success)">current</span>
+        <span class="date">Jan 2025</span>
+        <span class="filename dir">./Bectran_DevOps_Lead/</span>
+        <div class="file-desc" style="color: var(--text-main)">
+          # <b>HEAD pointer</b> (Active)<br>
+          # Managing SOC & PCI DSS compliance audits.<br>
+          # Implemented SAST/DAST & AWS WAF security layers.<br>
+          # Building Datadog observability pipelines.
         </div>
-
       </div>
     </div>
   </section>
@@ -304,75 +327,88 @@
     </div>
 
     <div class="command-output" id="out-certs">
-      <div class="row">
+      <div class="row g-3">
         <div class="col-md-6">
           <div class="cert-block">
-            <div class="d-flex justify-content-between text-muted small mb-2">
-              <span>[AWS-SAA-C03]</span>
-              <span class="status-ok">ACTIVE</span>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small class="text-muted">ID: AWS-SAA-C03</small>
+              <span class="status-ok">VERIFIED</span>
             </div>
-            <h5 class="mb-1 text-white">AWS Solutions Architect Assoc.</h5>
-            <div class="small text-muted">Issuer: Amazon Web Services</div>
+            <h5 class="mb-1" style="color:var(--color-purple)">AWS Solutions Architect Assoc.</h5>
+            <small class="text-muted">Issued by Amazon Web Services</small>
           </div>
         </div>
         
         <div class="col-md-6">
           <div class="cert-block">
-            <div class="d-flex justify-content-between text-muted small mb-2">
-              <span>[Terraform-003]</span>
-              <span class="status-ok">ACTIVE</span>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small class="text-muted">ID: HASH-003</small>
+              <span class="status-ok">VERIFIED</span>
             </div>
-            <h5 class="mb-1 text-white">HashiCorp Terraform Associate</h5>
-            <div class="small text-muted">Issuer: HashiCorp</div>
+            <h5 class="mb-1" style="color:var(--color-cmd)">Terraform Associate</h5>
+            <small class="text-muted">Issued by HashiCorp</small>
           </div>
         </div>
 
         <div class="col-md-6">
           <div class="cert-block">
-            <div class="d-flex justify-content-between text-muted small mb-2">
-              <span>[SY0-601]</span>
-              <span class="status-ok">ACTIVE</span>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small class="text-muted">ID: SY0-601</small>
+              <span class="status-ok">VERIFIED</span>
             </div>
-            <h5 class="mb-1 text-white">CompTIA Security+</h5>
-            <div class="small text-muted">Issuer: CompTIA</div>
+            <h5 class="mb-1" style="color:var(--color-error)">CompTIA Security+</h5>
+            <small class="text-muted">Issued by CompTIA</small>
           </div>
         </div>
 
         <div class="col-md-6">
           <div class="cert-block">
-            <div class="d-flex justify-content-between text-muted small mb-2">
-              <span>[AZ-900]</span>
-              <span class="status-ok">ACTIVE</span>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small class="text-muted">ID: AZ-900</small>
+              <span class="status-ok">VERIFIED</span>
             </div>
-            <h5 class="mb-1 text-white">Microsoft Azure Fundamentals</h5>
-            <div class="small text-muted">Issuer: Microsoft</div>
+            <h5 class="mb-1" style="color:var(--color-cmd)">Azure Fundamentals</h5>
+            <small class="text-muted">Issued by Microsoft</small>
           </div>
         </div>
-      </div>
-      
-      <div class="mt-4 text-center">
-        <p class="text-muted">-- End of stream --</p>
-        <a href="#sec-hero" class="btn btn-outline-secondary btn-sm" style="border-radius:0;">^C (Return to Top)</a>
       </div>
     </div>
   </section>
 
+  <section id="sec-interactive" style="min-height: 40vh; align-items: flex-start; justify-content: flex-start;">
+    <div class="text-muted mb-3 small">
+      # Interactive Session Started. Type 'help' for options.
+    </div>
+    <div id="cli-output" style="width: 100%;"></div>
+    <div class="prompt-line" style="width: 100%;">
+      <span class="user-path">guest@portfolio:~$</span>
+      <input type="text" id="cli-input" autocomplete="off" spellcheck="false" placeholder="Type a command...">
+    </div>
+  </section>
+
+  <div class="status-bar">
+    <div class="sb-section sb-blue">NORMAL</div>
+    <div class="sb-section sb-purple"><i class="bi bi-git me-2"></i>master*</div>
+    <div class="sb-section sb-dark">dhanush/portfolio/index.html</div>
+    <div class="sb-section text-muted small me-3">utf-8</div>
+    <div class="sb-section text-muted small me-3">linux</div>
+    <div class="sb-section sb-green" id="clock">00:00:00</div>
+  </div>
+
   <script>
-    // Configuration for each section
+    // 1. SCROLL TYPING ENGINE
     const sections = [
       { id: 'hero',   command: 'whoami' },
-      { id: 'skills', command: 'top -b -n 1 | head -n 15' },
+      { id: 'skills', command: 'top -b -n 1 | head -n 10' },
       { id: 'exp',    command: 'ls -ltr /home/dhanush/experience' },
       { id: 'certs',  command: './verify_certs.sh --verbose' }
     ];
 
-    // Typewriter effect function
     function typeCommand(elementId, text, speed, callback) {
       let i = 0;
       const element = document.getElementById(elementId);
       const cursor = document.getElementById('cursor-' + elementId.split('-')[1]);
-      
-      cursor.classList.add('typing'); // Stop blinking while typing
+      cursor.classList.add('typing'); 
       
       function type() {
         if (i < text.length) {
@@ -380,14 +416,13 @@
           i++;
           setTimeout(type, speed);
         } else {
-          cursor.classList.remove('typing'); // Resume blinking
+          cursor.classList.remove('typing');
           if (callback) callback();
         }
       }
       type();
     }
 
-    // Intersection Observer to trigger typing on scroll
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -395,21 +430,75 @@
           const config = sections.find(s => s.id === sectionId);
           const cmdElement = document.getElementById('cmd-' + sectionId);
           
-          // Only type if empty (haven't run yet)
-          if (cmdElement && cmdElement.innerHTML === '') {
-            typeCommand('cmd-' + sectionId, config.command, 50, () => {
-              // Reveal output after typing finishes
+          if (cmdElement && cmdElement.innerHTML === '' && config) {
+            typeCommand('cmd-' + sectionId, config.command, 40, () => {
               document.getElementById('out-' + sectionId).classList.add('visible');
             });
           }
         }
       });
-    }, { threshold: 0.4 }); // Trigger when 40% of section is visible
+    }, { threshold: 0.3 });
 
-    // Start observing
     sections.forEach(sec => {
       const el = document.getElementById('sec-' + sec.id);
       if(el) observer.observe(el);
+    });
+
+    // 2. STATUS BAR CLOCK
+    setInterval(() => {
+      document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+    }, 1000);
+
+    // 3. INTERACTIVE TERMINAL
+    const input = document.getElementById('cli-input');
+    const output = document.getElementById('cli-output');
+
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        const cmd = this.value.trim().toLowerCase();
+        this.value = ''; 
+        
+        // Add User Command to History
+        const historyLine = document.createElement('div');
+        historyLine.innerHTML = `<span class="user-path">guest@portfolio:~$</span> ${cmd}`;
+        output.appendChild(historyLine);
+
+        // Process Command
+        let response = '';
+        if (cmd === 'help') {
+          response = `
+            <div class="text-muted">Available Commands:</div>
+            <div><span style="color:var(--color-cmd)">ls</span>       - List site sections</div>
+            <div><span style="color:var(--color-cmd)">whoami</span>   - Identify current user</div>
+            <div><span style="color:var(--color-cmd)">contact</span>  - Get contact info</div>
+            <div><span style="color:var(--color-cmd)">clear</span>    - Clear terminal</div>
+          `;
+        } else if (cmd === 'ls') {
+          response = '<span style="color:var(--color-purple)">about/  skills/  experience/  certifications/</span>';
+        } else if (cmd === 'whoami') {
+          response = 'guest user (unauthorized)';
+        } else if (cmd === 'contact') {
+          response = 'Email: dhanushnaidu77@gmail.com';
+        } else if (cmd === 'sudo') {
+            response = '<span style="color:var(--color-error)">Permission denied: You are not Dhanush.</span>';
+        } else if (cmd === 'clear') {
+          output.innerHTML = '';
+          return; 
+        } else if (cmd !== '') {
+          response = `<span style="color:var(--color-error)">bash: ${cmd}: command not found</span>`;
+        }
+
+        if (response) {
+          const respDiv = document.createElement('div');
+          respDiv.className = 'mb-3';
+          respDiv.innerHTML = response;
+          output.appendChild(respDiv);
+        }
+
+        // Keep focus and scroll
+        this.focus();
+        window.scrollTo(0, document.body.scrollHeight);
+      }
     });
   </script>
 </body>
