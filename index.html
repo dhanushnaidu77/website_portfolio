@@ -7,31 +7,36 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 
   <style>
     :root {
-      --bg-term: #1e1e2e;
-      --bg-panel: #252538;
-      --bg-deeper: #181825;
-      --text-main: #cdd6f4;
-      --text-muted: #9399b2;
-      --color-cmd: #89b4fa;
-      --color-path: #f5c2e7;
-      --color-success: #a6e3a1;
-      --color-warn: #f9e2af;
-      --color-error: #f38ba8;
-      --color-purple: #cba6f7;
-      --color-teal: #94e2d5;
-      --color-peach: #fab387;
+      --bg-term: #0f0f1a;
+      --bg-panel: #161625;
+      --bg-deeper: #0a0a14;
+      --bg-surface: #1c1c30;
+      --text-main: #e2e8f0;
+      --text-muted: #6b7394;
+      --text-dim: #454b64;
+      --color-cmd: #7aa2f7;
+      --color-path: #ff9e64;
+      --color-success: #9ece6a;
+      --color-warn: #e0af68;
+      --color-error: #f7768e;
+      --color-purple: #bb9af7;
+      --color-teal: #73daca;
+      --color-peach: #ff9e64;
+      --color-cyan: #7dcfff;
       --font-mono: 'JetBrains Mono', monospace;
-      --font-display: 'Space Mono', monospace;
-      --border: #313244;
-      --glow-cmd: rgba(137, 180, 250, 0.15);
-      --glow-purple: rgba(203, 166, 247, 0.1);
+      --font-display: 'IBM Plex Mono', monospace;
+      --border: #1e1e35;
+      --border-hover: #2d2d50;
+      --glow-cmd: rgba(122, 162, 247, 0.12);
+      --glow-purple: rgba(187, 154, 247, 0.08);
+      --glow-teal: rgba(115, 218, 202, 0.08);
     }
 
     * { box-sizing: border-box; }
@@ -40,138 +45,131 @@
       background-color: var(--bg-term);
       color: var(--text-main);
       font-family: var(--font-mono);
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       padding-bottom: 40px;
       overflow-x: hidden;
-      line-height: 1.6;
+      line-height: 1.65;
     }
 
-    /* Subtle grid background */
     body::before {
       content: '';
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background-image:
-        linear-gradient(rgba(137, 180, 250, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(137, 180, 250, 0.02) 1px, transparent 1px);
-      background-size: 40px 40px;
+      background-image: radial-gradient(rgba(122,162,247,0.035) 1px, transparent 1px);
+      background-size: 32px 32px;
       z-index: 0;
       pointer-events: none;
     }
 
-    /* Scanline overlay for CRT mode */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%; left: -10%;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(122,162,247,0.04) 0%, transparent 70%);
+      z-index: 0;
+      pointer-events: none;
+      animation: float-orb 20s ease-in-out infinite;
+    }
+    @keyframes float-orb {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(80px, 60px); }
+      50% { transform: translate(-40px, 120px); }
+      75% { transform: translate(60px, -40px); }
+    }
+
     #crt-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(0, 0, 0, 0.15) 0px,
-        rgba(0, 0, 0, 0.15) 1px,
-        transparent 1px,
-        transparent 3px
-      );
+      background: repeating-linear-gradient(0deg,
+        rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px,
+        transparent 1px, transparent 3px);
       z-index: 99998;
       pointer-events: none;
-      animation: crt-flicker 0.1s infinite;
+      animation: crt-flicker 0.08s infinite;
     }
-    @keyframes crt-flicker {
-      0% { opacity: 0.95; }
-      50% { opacity: 1; }
-      100% { opacity: 0.95; }
-    }
+    @keyframes crt-flicker { 0% { opacity: 0.93; } 50% { opacity: 1; } 100% { opacity: 0.93; } }
 
-    /* CRT Theme Override */
     body.crt-mode {
-      --bg-term: #0a0a0a;
-      --bg-panel: #111;
-      --text-main: #33ff33;
-      --text-muted: #1a9e1a;
-      --color-cmd: #33ff33;
-      --color-path: #33ff33;
-      --color-success: #33ff33;
-      --color-warn: #33ff33;
-      --color-error: #ff3333;
-      --color-purple: #33ff33;
-      --color-teal: #33ff33;
-      --color-peach: #33ff33;
-      --border: #1a3a1a;
-      background-color: #0a0a0a;
+      --bg-term: #050505; --bg-panel: #0a0a0a; --bg-deeper: #020202; --bg-surface: #0d0d0d;
+      --text-main: #00ff41; --text-muted: #00aa2a; --text-dim: #005515;
+      --color-cmd: #00ff41; --color-path: #00ff41; --color-success: #00ff41;
+      --color-warn: #00ff41; --color-error: #ff2020; --color-purple: #00ff41;
+      --color-teal: #00ff41; --color-peach: #00ff41; --color-cyan: #00ff41;
+      --border: #003300; --border-hover: #004400;
+      background-color: #050505;
     }
     body.crt-mode #crt-overlay { display: block; }
-    body.crt-mode .cert-block { border-color: #1a3a1a; background: #111; }
     body.crt-mode .sb-blue, body.crt-mode .sb-purple, body.crt-mode .sb-green {
-      background: #33ff33; color: #0a0a0a;
+      background: #00ff41; color: #050505;
     }
 
     section {
-      min-height: 85vh;
-      padding: 2rem 1rem;
+      min-height: 90vh;
+      padding: 3rem 1.5rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      max-width: 960px;
+      max-width: 920px;
       margin: 0 auto;
       position: relative;
       z-index: 2;
     }
 
-    a { color: var(--color-cmd); text-decoration: none; border-bottom: 1px dotted var(--color-cmd); transition: all 0.2s; }
-    a:hover { background: var(--glow-cmd); color: #fff; }
+    a {
+      color: var(--color-cmd);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(122,162,247,0.4);
+      transition: all 0.25s;
+    }
+    a:hover { background: var(--glow-cmd); color: #fff; border-bottom-color: var(--color-cmd); }
 
-    /* --- TERMINAL CHROME --- */
     .prompt-line {
-      font-size: 1.05rem;
+      font-size: 1rem;
       margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
       flex-wrap: wrap;
     }
-    .user-path { color: var(--color-path); font-weight: 700; margin-right: 10px; }
-    .command-text { color: var(--color-cmd); font-weight: 700; }
+    .user-path { color: var(--color-path); font-weight: 700; margin-right: 4px; }
+    .chevron { color: var(--color-success); margin-right: 6px; font-weight: 700; }
+    .command-text { color: var(--color-cmd); font-weight: 600; }
 
     .cursor {
       display: inline-block;
-      width: 9px;
-      height: 1.15rem;
-      background: var(--text-muted);
+      width: 8px; height: 1.1rem;
+      background: var(--color-cmd);
       animation: blink 1s step-end infinite;
       vertical-align: middle;
-      margin-left: 4px;
+      margin-left: 3px;
+      border-radius: 1px;
     }
     .cursor.typing { animation: none; opacity: 1; }
     @keyframes blink { 50% { opacity: 0; } }
 
-    .command-output {
-      opacity: 0;
-      transform: translateY(8px);
-    }
+    .command-output { opacity: 0; transform: translateY(10px); }
     .command-output.visible {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.4s ease, transform 0.4s ease;
+      opacity: 1; transform: translateY(0);
+      transition: opacity 0.5s ease, transform 0.5s ease;
     }
-
-    /* Staggered children animation */
     .command-output.visible .stagger-item {
       opacity: 0;
-      animation: stagger-in 0.3s forwards;
+      animation: stagger-in 0.35s forwards;
     }
     @keyframes stagger-in {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* --- BOOT SCREEN --- */
     #boot-screen {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: var(--bg-term);
+      background: #0a0a14;
       z-index: 99999;
       padding: 2rem;
       font-family: var(--font-mono);
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       overflow: hidden;
       display: flex;
@@ -179,350 +177,242 @@
       justify-content: flex-end;
     }
     .log-line { margin-bottom: 2px; }
-    .log-time { color: var(--color-cmd); margin-right: 10px; }
     .log-ok { color: var(--color-success); font-weight: bold; }
+    #boot-progress-wrap {
+      margin-top: 12px; height: 3px;
+      background: var(--border); border-radius: 2px; overflow: hidden;
+    }
+    #boot-progress {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--color-cmd), var(--color-purple));
+      transition: width 0.15s; border-radius: 2px;
+    }
 
-    /* --- METRICS SIDEBAR --- */
     .metrics-panel {
-      position: fixed;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 220px;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      z-index: 1;
-      pointer-events: none;
-      font-family: var(--font-mono);
-      display: none;
-      opacity: 0.4;
+      position: fixed; right: 12px; top: 50%; transform: translateY(-50%);
+      width: 200px; font-size: 0.68rem; color: var(--text-dim);
+      z-index: 1; pointer-events: none;
+      font-family: var(--font-mono); display: none; opacity: 0.45;
     }
-    @media(min-width: 1200px) {
-      .metrics-panel { display: block; }
-    }
+    @media(min-width: 1250px) { .metrics-panel { display: block; } }
     .metric-box {
-      border: 1px solid rgba(137,180,250,0.1);
-      border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 10px;
-      background: rgba(37,37,56,0.5);
+      border: 1px solid rgba(122,162,247,0.06); border-radius: 6px;
+      padding: 8px 10px; margin-bottom: 8px;
+      background: rgba(22,22,37,0.6); backdrop-filter: blur(4px);
     }
-    .metric-label { color: var(--color-cmd); font-weight: 700; margin-bottom: 6px; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; }
-    .spark-bar {
-      height: 3px;
-      background: rgba(137,180,250,0.2);
-      border-radius: 2px;
-      margin: 3px 0;
-      overflow: hidden;
+    .metric-label {
+      color: var(--text-dim); font-weight: 700; margin-bottom: 4px;
+      font-size: 0.58rem; text-transform: uppercase; letter-spacing: 1.5px;
     }
-    .spark-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 1s ease;
-    }
+    .spark-bar { height: 2px; background: rgba(122,162,247,0.1); border-radius: 2px; margin: 4px 0; overflow: hidden; }
+    .spark-fill { height: 100%; border-radius: 2px; transition: width 1.5s ease; }
 
-    /* --- HERO --- */
+    .nav-dots {
+      position: fixed; left: 16px; top: 50%; transform: translateY(-50%);
+      z-index: 9998; display: none; flex-direction: column; gap: 12px;
+    }
+    @media(min-width: 1100px) { .nav-dots { display: flex; } }
+    .nav-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-dim); transition: all 0.3s;
+      cursor: pointer; border: none; padding: 0; position: relative;
+    }
+    .nav-dot.active {
+      background: var(--color-cmd);
+      box-shadow: 0 0 8px rgba(122,162,247,0.4);
+      transform: scale(1.6);
+    }
+    .nav-dot::after {
+      content: attr(data-label);
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      font-size: 0.62rem; color: var(--text-dim); white-space: nowrap;
+      opacity: 0; transition: opacity 0.2s; pointer-events: none;
+      font-family: var(--font-mono);
+    }
+    .nav-dot:hover::after { opacity: 1; }
+
     .hero-ascii {
-      font-size: 0.68rem;
-      color: var(--color-purple);
-      white-space: pre;
-      margin-bottom: 1.5rem;
-      line-height: 1.15;
-      opacity: 0.85;
+      font-size: 0.62rem; color: var(--color-purple);
+      white-space: pre; margin-bottom: 0.5rem; line-height: 1.12;
+      cursor: default; transition: all 0.3s;
     }
-    .hero-name {
-      font-family: var(--font-display);
-      font-size: 2.8rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin: 0 0 0.5rem 0;
-      letter-spacing: -1px;
-      line-height: 1.1;
+    .hero-ascii:hover {
+      animation: glitch 0.3s ease;
+      text-shadow: 2px 0 var(--color-error), -2px 0 var(--color-cyan);
     }
-    @media(min-width: 768px) {
-      .hero-name { font-size: 3.5rem; }
-    }
-    .hero-tagline {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 0.3rem;
-    }
-    .hero-quote {
-      color: var(--color-success);
-      font-size: 0.9rem;
-      font-style: italic;
-      opacity: 0.8;
-    }
-    .hero-links {
-      margin-top: 2rem;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .hero-links a {
-      padding: 6px 14px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.85rem;
-      transition: all 0.25s;
-    }
-    .hero-links a:hover {
-      border-color: var(--color-cmd);
-      background: var(--glow-cmd);
-      transform: translateY(-1px);
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 1px); }
+      40% { transform: translate(2px, -1px); }
+      60% { transform: translate(-1px, 2px); }
+      80% { transform: translate(1px, -2px); }
+      100% { transform: translate(0); }
     }
 
-    /* --- SKILLS (TOP) --- */
-    .top-header {
-      background: var(--bg-panel);
-      padding: 6px 8px;
+    .hero-subtitle {
+      font-family: var(--font-display); font-size: 1.1rem;
+      color: var(--text-main); margin: 0.8rem 0 0.3rem; font-weight: 600;
+    }
+    .hero-tagline { color: var(--text-muted); font-size: 0.88rem; }
+    .hero-quote { color: var(--color-success); font-size: 0.85rem; opacity: 0.7; min-height: 1.4em; }
+    .hero-links { margin-top: 2rem; display: flex; gap: 8px; flex-wrap: wrap; }
+    .hero-link {
+      padding: 7px 14px; border: 1px solid var(--border); border-radius: 6px;
+      font-size: 0.8rem; color: var(--text-muted); transition: all 0.3s;
+      display: flex; align-items: center; gap: 6px;
       border-bottom: 1px solid var(--border);
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      border-radius: 4px 4px 0 0;
-      font-weight: 700;
+    }
+    .hero-link:hover {
+      border-color: var(--color-cmd); color: var(--color-cmd);
+      background: var(--glow-cmd); transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(122,162,247,0.1);
+    }
+
+    .top-header {
+      background: var(--bg-surface); padding: 6px 10px;
+      border: 1px solid var(--border); border-bottom: 2px solid var(--border);
+      font-size: 0.7rem; color: var(--text-dim); border-radius: 6px 6px 0 0;
+      font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+      display: grid; grid-template-columns: 50px 65px 1fr 50px;
     }
     .process-row {
-      display: grid;
-      grid-template-columns: 50px 70px 1fr 55px;
-      align-items: center;
-      border-bottom: 1px solid rgba(49,50,68,0.5);
-      padding: 5px 0;
-      font-size: 0.85rem;
-      transition: background 0.2s;
+      display: grid; grid-template-columns: 50px 65px 1fr 50px;
+      align-items: center; border-bottom: 1px solid rgba(30,30,53,0.8);
+      padding: 5px 10px; font-size: 0.82rem; transition: all 0.2s;
     }
-    .process-row:hover { background: rgba(49,50,68,0.6); }
-    .col-pid { color: var(--text-muted); font-size: 0.78rem; }
-    .col-user { color: var(--color-purple); font-size: 0.78rem; }
-    .col-cmd { font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .col-cpu { color: var(--color-success); text-align: right; font-weight: 700; font-size: 0.8rem; }
+    .process-row:hover {
+      background: rgba(122,162,247,0.04);
+      border-left: 2px solid var(--color-cmd); padding-left: 8px;
+    }
+    .col-pid { color: var(--text-dim); font-size: 0.72rem; }
+    .col-user { color: var(--color-purple); font-size: 0.75rem; }
+    .col-cmd { font-weight: 500; color: var(--text-main); }
+    .col-cpu { color: var(--color-success); text-align: right; font-weight: 700; font-size: 0.75rem; }
 
-    /* Skill category badges */
     .skill-cat {
-      display: inline-block;
-      font-size: 0.65rem;
-      padding: 1px 6px;
-      border-radius: 3px;
-      margin-left: 8px;
-      font-weight: 400;
-      opacity: 0.7;
-      vertical-align: middle;
+      display: inline-block; font-size: 0.56rem; padding: 1px 5px;
+      border-radius: 3px; margin-left: 6px; font-weight: 600;
+      letter-spacing: 0.5px; vertical-align: middle;
     }
-    .cat-cloud { background: rgba(137,180,250,0.15); color: var(--color-cmd); }
-    .cat-devops { background: rgba(166,227,161,0.15); color: var(--color-success); }
-    .cat-security { background: rgba(243,139,168,0.15); color: var(--color-error); }
-    .cat-lang { background: rgba(249,226,175,0.15); color: var(--color-warn); }
-    .cat-monitor { background: rgba(203,166,247,0.15); color: var(--color-purple); }
+    .cat-cloud { background: rgba(122,162,247,0.12); color: var(--color-cmd); }
+    .cat-devops { background: rgba(158,206,106,0.12); color: var(--color-success); }
+    .cat-security { background: rgba(247,118,142,0.12); color: var(--color-error); }
+    .cat-lang { background: rgba(224,175,104,0.12); color: var(--color-warn); }
+    .cat-monitor { background: rgba(187,154,247,0.12); color: var(--color-purple); }
 
-    /* --- EXPERIENCE --- */
     .file-row {
-      margin-bottom: 12px;
-      padding: 8px;
-      border-radius: 4px;
-      transition: background 0.2s;
+      margin-bottom: 14px; padding: 10px 12px; border-radius: 6px;
+      border: 1px solid transparent; transition: all 0.25s;
     }
-    .file-row:hover { background: rgba(255,255,255,0.025); }
-    .file-meta {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 4px;
-    }
-    .perms { color: var(--text-muted); font-size: 0.82rem; }
-    .owner { color: var(--color-path); font-size: 0.85rem; }
-    .date { color: var(--text-muted); font-size: 0.85rem; }
-    .filename { color: var(--color-cmd); font-weight: 700; font-size: 0.95rem; }
+    .file-row:hover { background: rgba(122,162,247,0.03); border-color: var(--border); }
+    .file-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .perms { color: var(--text-dim); font-size: 0.78rem; }
+    .owner { color: var(--color-path); font-size: 0.82rem; }
+    .date { color: var(--text-muted); font-size: 0.82rem; }
+    .filename { color: var(--color-cmd); font-weight: 700; font-size: 0.92rem; }
     .filename.dir { color: var(--color-success); }
     .file-desc {
-      margin-top: 6px;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      border-left: 2px solid var(--border);
-      padding-left: 14px;
-      margin-left: 4px;
+      margin-top: 6px; color: var(--text-muted); font-size: 0.82rem;
+      border-left: 2px solid var(--border); padding-left: 14px; margin-left: 4px; line-height: 1.7;
     }
     .file-desc .highlight { color: var(--color-warn); font-weight: 600; }
     .file-desc .tech { color: var(--color-teal); }
 
-    /* --- EDUCATION --- */
     .edu-block {
-      border: 1px solid var(--border);
-      background: var(--bg-panel);
-      padding: 14px 16px;
-      margin-bottom: 12px;
-      border-radius: 6px;
-      transition: border-color 0.2s;
+      border: 1px solid var(--border); background: var(--bg-panel);
+      padding: 16px 18px; margin-bottom: 12px; border-radius: 8px; transition: all 0.3s;
     }
-    .edu-block:hover { border-color: var(--color-teal); }
-    .edu-degree { color: var(--color-teal); font-weight: 700; font-size: 1rem; }
-    .edu-school { color: var(--text-main); font-size: 0.9rem; margin-top: 2px; }
-    .edu-detail { color: var(--text-muted); font-size: 0.82rem; margin-top: 4px; }
+    .edu-block:hover {
+      border-color: var(--color-teal); box-shadow: 0 4px 20px var(--glow-teal); transform: translateY(-2px);
+    }
+    .edu-degree { color: var(--color-teal); font-weight: 700; font-size: 1rem; font-family: var(--font-display); }
+    .edu-school { color: var(--text-main); font-size: 0.88rem; margin-top: 3px; }
+    .edu-detail { color: var(--text-muted); font-size: 0.8rem; margin-top: 4px; }
 
-    /* --- PROJECTS (kubectl) --- */
     .pod-header {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1.2fr 1fr 1fr;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      font-weight: 700;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 5px;
-      margin-bottom: 8px;
+      display: grid; grid-template-columns: 2fr 0.8fr 1fr 0.8fr 0.8fr;
+      font-size: 0.7rem; color: var(--text-dim); font-weight: 700;
+      border-bottom: 2px solid var(--border); padding-bottom: 5px; margin-bottom: 8px;
+      text-transform: uppercase; letter-spacing: 0.5px;
     }
     .pod-row {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1.2fr 1fr 1fr;
-      font-size: 0.85rem;
-      align-items: center;
-      padding: 4px 0;
+      display: grid; grid-template-columns: 2fr 0.8fr 1fr 0.8fr 0.8fr;
+      font-size: 0.82rem; align-items: center; padding: 5px 0;
     }
     .pod-name { color: var(--color-cmd); font-weight: 600; }
     .pod-status-running { color: var(--color-success); }
     .pod-status-completed { color: var(--text-muted); }
     .pod-desc {
-      margin-left: 16px;
-      margin-bottom: 12px;
-      padding-left: 10px;
-      border-left: 2px solid var(--border);
-      font-size: 0.82rem;
-      color: var(--text-muted);
+      margin-left: 16px; margin-bottom: 14px; padding-left: 10px;
+      border-left: 2px solid var(--border); font-size: 0.8rem; color: var(--text-muted);
     }
 
-    /* --- CERTS --- */
     .cert-block {
-      border: 1px solid var(--border);
-      background: var(--bg-panel);
-      padding: 14px 16px;
-      margin-bottom: 12px;
-      border-radius: 8px;
-      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      border: 1px solid var(--border); background: var(--bg-panel);
+      padding: 14px 16px; margin-bottom: 12px; border-radius: 8px;
+      transition: all 0.3s; position: relative; overflow: hidden;
     }
+    .cert-block::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 3px; height: 100%; background: var(--color-success);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .cert-block:hover::before { opacity: 1; }
     .cert-block:hover {
-      transform: translateY(-2px);
-      border-color: var(--color-purple);
-      box-shadow: 0 4px 20px var(--glow-purple);
+      transform: translateY(-2px); border-color: var(--border-hover);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.3);
     }
     .status-ok {
-      color: var(--color-success);
-      background: rgba(166, 227, 161, 0.1);
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+      color: var(--color-success); background: rgba(158,206,106,0.1);
+      padding: 2px 7px; border-radius: 4px; font-size: 0.68rem;
+      font-weight: 700; letter-spacing: 0.5px;
     }
 
-    /* --- INTERACTIVE CLI --- */
     #cli-input {
-      background: transparent;
-      border: none;
-      color: #fff;
-      font-family: var(--font-mono);
-      font-size: 1rem;
-      outline: none;
-      flex-grow: 1;
-      caret-color: var(--color-cmd);
+      background: transparent; border: none; color: var(--text-main);
+      font-family: var(--font-mono); font-size: 0.95rem; outline: none;
+      flex-grow: 1; caret-color: var(--color-cmd);
     }
     #cli-output { margin-bottom: 1.5rem; }
     .cli-response { margin-bottom: 12px; }
 
-    /* Neofetch styling */
-    .neofetch-box {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      align-items: flex-start;
-    }
-    .neofetch-ascii {
-      color: var(--color-purple);
-      font-size: 0.65rem;
-      white-space: pre;
-      line-height: 1.15;
-      flex-shrink: 0;
-    }
-    .neofetch-info { font-size: 0.85rem; }
+    .neofetch-box { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
+    .neofetch-ascii { color: var(--color-purple); font-size: 0.6rem; white-space: pre; line-height: 1.15; flex-shrink: 0; }
+    .neofetch-info { font-size: 0.82rem; }
     .nf-label { color: var(--color-cmd); font-weight: 700; }
     .nf-val { color: var(--text-main); }
-    .nf-colors {
-      display: flex;
-      gap: 4px;
-      margin-top: 6px;
-    }
-    .nf-color-dot {
-      width: 16px;
-      height: 16px;
-      border-radius: 3px;
-    }
+    .nf-colors { display: flex; gap: 4px; margin-top: 8px; }
+    .nf-color-dot { width: 14px; height: 14px; border-radius: 3px; }
 
-    /* Matrix canvas */
     #matrix-canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 99990;
-      pointer-events: none;
-      display: none;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 99990; pointer-events: none; display: none;
     }
 
-    /* --- STATUS BAR --- */
     .status-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 30px;
-      background: var(--bg-deeper);
-      display: flex;
-      align-items: center;
-      font-size: 0.75rem;
-      z-index: 9999;
-      border-top: 1px solid var(--border);
-      box-shadow: 0 -4px 12px rgba(0,0,0,0.3);
+      position: fixed; bottom: 0; left: 0; width: 100%; height: 28px;
+      background: var(--bg-deeper); display: flex; align-items: center;
+      font-size: 0.7rem; z-index: 9999; border-top: 1px solid var(--border);
     }
-    .sb-section { padding: 0 12px; height: 100%; display: flex; align-items: center; }
+    .sb-section { padding: 0 10px; height: 100%; display: flex; align-items: center; }
     .sb-blue { background: var(--color-cmd); color: var(--bg-term); font-weight: bold; }
     .sb-purple { background: var(--color-purple); color: var(--bg-term); font-weight: bold; }
-    .sb-dark { color: var(--text-muted); flex-grow: 1; }
+    .sb-dark { color: var(--text-dim); flex-grow: 1; }
     .sb-green { background: var(--color-success); color: var(--bg-term); font-weight: bold; }
-    .sb-visitors { color: var(--color-teal); }
 
-    /* --- SCROLL PROGRESS --- */
     #scroll-progress {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--color-cmd), var(--color-purple), var(--color-path));
-      z-index: 99999;
-      width: 0%;
-      transition: width 0.1s;
+      position: fixed; top: 0; left: 0; height: 2px;
+      background: linear-gradient(90deg, var(--color-cmd), var(--color-purple), var(--color-error));
+      z-index: 99999; width: 0%; transition: width 0.15s;
     }
 
-    /* --- SECTION DIVIDER --- */
-    .section-divider {
-      width: 100%;
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 1rem;
-      z-index: 2;
-      position: relative;
-    }
-    .section-divider hr {
-      border: none;
-      border-top: 1px dashed var(--border);
-      opacity: 0.5;
-    }
-
-    /* --- RESPONSIVE TWEAKS --- */
     @media(max-width: 600px) {
-      .hero-name { font-size: 2rem; }
-      .hero-ascii { font-size: 0.5rem; }
-      section { padding: 1.5rem 0.8rem; min-height: 75vh; }
-      .process-row { font-size: 0.78rem; grid-template-columns: 40px 55px 1fr 45px; }
-      .pod-header, .pod-row { grid-template-columns: 1.5fr 0.8fr 1fr 0.8fr 0.8fr; font-size: 0.72rem; }
+      .hero-ascii { font-size: 0.42rem; }
+      section { padding: 2rem 0.8rem; min-height: 80vh; }
+      .process-row { font-size: 0.75rem; grid-template-columns: 40px 50px 1fr 42px; }
+      .pod-header, .pod-row { grid-template-columns: 1.5fr 0.7fr 1fr 0.7fr 0.7fr; font-size: 0.7rem; }
       .skill-cat { display: none; }
+      .hero-link { font-size: 0.72rem; padding: 5px 10px; }
     }
   </style>
 </head>
@@ -532,175 +422,174 @@
   <div id="crt-overlay"></div>
   <canvas id="matrix-canvas"></canvas>
 
-  <!-- BOOT SCREEN -->
-  <div id="boot-screen">
-    <div id="boot-text"></div>
+  <div class="nav-dots" id="nav-dots">
+    <button class="nav-dot active" data-target="sec-hero" data-label="whoami"></button>
+    <button class="nav-dot" data-target="sec-skills" data-label="skills"></button>
+    <button class="nav-dot" data-target="sec-exp" data-label="experience"></button>
+    <button class="nav-dot" data-target="sec-edu" data-label="education"></button>
+    <button class="nav-dot" data-target="sec-k8s" data-label="projects"></button>
+    <button class="nav-dot" data-target="sec-certs" data-label="certs"></button>
+    <button class="nav-dot" data-target="sec-interactive" data-label="terminal"></button>
   </div>
 
-  <!-- METRICS SIDEBAR -->
+  <div id="boot-screen">
+    <div id="boot-text"></div>
+    <div id="boot-progress-wrap"><div id="boot-progress"></div></div>
+  </div>
+
   <div class="metrics-panel" id="metrics-panel">
     <div class="metric-box">
       <div class="metric-label">CPU Load</div>
-      <div id="cpu-val" style="color:var(--color-success); font-size:1.1rem; font-weight:700;">0%</div>
+      <div id="cpu-val" style="color:var(--color-success); font-size:1rem; font-weight:700;">0%</div>
       <div class="spark-bar"><div class="spark-fill" id="cpu-bar" style="width:0%; background:var(--color-success);"></div></div>
     </div>
     <div class="metric-box">
       <div class="metric-label">Memory</div>
-      <div id="mem-val" style="color:var(--color-cmd); font-size:1.1rem; font-weight:700;">0 MB</div>
+      <div id="mem-val" style="color:var(--color-cmd); font-size:1rem; font-weight:700;">0 MB</div>
       <div class="spark-bar"><div class="spark-fill" id="mem-bar" style="width:0%; background:var(--color-cmd);"></div></div>
     </div>
     <div class="metric-box">
       <div class="metric-label">Network I/O</div>
-      <div id="net-val" style="color:var(--color-peach); font-size:0.85rem; font-weight:700;">↑ 0 KB/s ↓ 0 KB/s</div>
+      <div id="net-val" style="color:var(--color-peach); font-size:0.78rem; font-weight:600;">↑ 0 KB/s ↓ 0 KB/s</div>
     </div>
     <div class="metric-box">
       <div class="metric-label">Uptime</div>
-      <div id="uptime-val" style="color:var(--color-teal); font-size:0.85rem;">0d 0h 0m</div>
+      <div id="uptime-val" style="color:var(--color-teal); font-size:0.78rem;">0d 0h 0m</div>
     </div>
     <div class="metric-box">
       <div class="metric-label">Containers</div>
-      <div style="color:var(--color-success); font-size:0.85rem;">12 running / 0 stopped</div>
+      <div style="color:var(--color-success); font-size:0.78rem;">12 running / 0 stopped</div>
     </div>
   </div>
 
-  <!-- ═══════════════════ HERO ═══════════════════ -->
+  <!-- HERO -->
   <section id="sec-hero">
     <div class="prompt-line">
-      <span class="user-path">dhanush@bectran:~$</span>
+      <span class="user-path">dhanush@bectran</span><span class="chevron">❯</span>
       <span class="command-text" id="cmd-hero"></span><span class="cursor" id="cursor-hero"></span>
     </div>
     <div class="command-output" id="out-hero">
-      <div class="hero-ascii d-none d-md-block">
+      <div class="hero-ascii d-none d-md-block" id="hero-ascii">
     ____  __                         __  
    / __ \/ /_  ____ _____  __  _____/ /_ 
   / / / / __ \/ __ `/ __ \/ / / / ___/ __ \
  / /_/ / / / / /_/ / / / / /_/ (__  ) / / /
 /_____/_/ /_/\__,_/_/ /_/\__,_/____/_/ /_/ 
+  ____                       __  
+ / __/_ _________  ___  ___ / /_ 
+_\ \/ // / __/ -_|_-< / _ \/ _ \
+/___/\_,_/_/  \__/___//_//_/_//_/
       </div>
-      <h1 class="hero-name">Dhanush Suresh</h1>
-      <p class="hero-tagline">> DevOps Engineer | SRE | Cybersecurity Enthusiast</p>
-      <p class="hero-quote">"Automating the boring stuff, securing the important stuff."</p>
-
+      <p class="hero-subtitle">> DevOps Engineer &middot; SRE &middot; Cybersecurity</p>
+      <p class="hero-quote" id="hero-quote"></p>
       <div class="hero-links">
-        <a href="mailto:dhanushnaidu77@gmail.com"><i class="bi bi-envelope me-1"></i>email</a>
-        <a href="https://linkedin.com/in/dhanush--s/" target="_blank"><i class="bi bi-linkedin me-1"></i>linkedin</a>
-        <a href="https://github.com/dhanush" target="_blank"><i class="bi bi-github me-1"></i>github</a>
-        <a href="https://youtube.com/@dhanush" target="_blank"><i class="bi bi-youtube me-1"></i>youtube</a>
-        <a href="assets/Dhanush-Suresh-Resume.pdf" target="_blank"><i class="bi bi-file-earmark-text me-1"></i>resume</a>
+        <a class="hero-link" href="mailto:dhanushnaidu77@gmail.com"><i class="bi bi-envelope"></i>email</a>
+        <a class="hero-link" href="https://linkedin.com/in/dhanush--s/" target="_blank"><i class="bi bi-linkedin"></i>linkedin</a>
+        <a class="hero-link" href="https://github.com/dhanush" target="_blank"><i class="bi bi-github"></i>github</a>
+        <a class="hero-link" href="https://youtube.com/@dhanush" target="_blank"><i class="bi bi-youtube"></i>youtube</a>
+        <a class="hero-link" href="assets/Dhanush-Suresh-Resume.pdf" target="_blank"><i class="bi bi-file-earmark-text"></i>resume</a>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════════ SKILLS ═══════════════════ -->
+  <!-- SKILLS -->
   <section id="sec-skills">
     <div class="prompt-line">
-      <span class="user-path">dhanush@bectran:~$</span>
+      <span class="user-path">dhanush@bectran</span><span class="chevron">❯</span>
       <span class="command-text" id="cmd-skills"></span><span class="cursor" id="cursor-skills"></span>
     </div>
     <div class="command-output" id="out-skills">
-      <div class="mb-3 text-muted" style="font-size:0.82rem;">
+      <div class="mb-3" style="font-size:0.76rem; color:var(--text-dim);">
         top - 10:23:05 up 420 days, 1 user, load average: 0.15, 0.08, 0.05<br>
-        Tasks: <span style="color:var(--color-cmd)">16 running</span>, 42 sleeping<br>
-        %Cpu(s): <span style="color:var(--color-success)">98.2 us</span>, 1.2 sy, 0.0 ni, 0.5 id
+        Tasks: <span style="color:var(--color-cmd)">16 running</span>, 42 sleeping &nbsp;|&nbsp;
+        %Cpu(s): <span style="color:var(--color-success)">98.2 us</span>, 1.2 sy
       </div>
-
-      <div class="top-header" style="display:grid; grid-template-columns: 50px 70px 1fr 55px;">
+      <div class="top-header">
         <span>PID</span><span>USER</span><span>COMMAND</span><span style="text-align:right">%CPU</span>
       </div>
-
       <div class="process-row stagger-item"><span class="col-pid">1001</span><span class="col-user">root</span><span class="col-cmd">aws --region us-east-1 <span class="skill-cat cat-cloud">CLOUD</span></span><span class="col-cpu">96.2</span></div>
       <div class="process-row stagger-item"><span class="col-pid">1002</span><span class="col-user">root</span><span class="col-cmd">kubectl --control-plane <span class="skill-cat cat-devops">DEVOPS</span></span><span class="col-cpu">94.0</span></div>
       <div class="process-row stagger-item"><span class="col-pid">1003</span><span class="col-user">dhanush</span><span class="col-cmd">terraform apply -auto-approve <span class="skill-cat cat-devops">DEVOPS</span></span><span class="col-cpu">91.5</span></div>
       <div class="process-row stagger-item"><span class="col-pid">1004</span><span class="col-user">ci-cd</span><span class="col-cmd">github-actions-runner <span class="skill-cat cat-devops">DEVOPS</span></span><span class="col-cpu">88.3</span></div>
       <div class="process-row stagger-item"><span class="col-pid">1005</span><span class="col-user">dhanush</span><span class="col-cmd">docker-compose up -d <span class="skill-cat cat-devops">DEVOPS</span></span><span class="col-cpu">85.1</span></div>
-      <div class="process-row stagger-item"><span class="col-pid">1006</span><span class="col-user">sec-ops</span><span class="col-cmd">crowdstrike-falcon-sensor <span class="skill-cat cat-security">SECURITY</span></span><span class="col-cpu">82.4</span></div>
+      <div class="process-row stagger-item"><span class="col-pid">1006</span><span class="col-user">sec-ops</span><span class="col-cmd">crowdstrike-falcon-sensor <span class="skill-cat cat-security">SEC</span></span><span class="col-cpu">82.4</span></div>
       <div class="process-row stagger-item"><span class="col-pid">1007</span><span class="col-user">dhanush</span><span class="col-cmd">python3 automation.py <span class="skill-cat cat-lang">LANG</span></span><span class="col-cpu">79.8</span></div>
-      <div class="process-row stagger-item"><span class="col-pid">1008</span><span class="col-user">monitor</span><span class="col-cmd">datadog-agent --config <span class="skill-cat cat-monitor">MONITOR</span></span><span class="col-cpu">77.0</span></div>
-      <div class="process-row stagger-item"><span class="col-pid">1009</span><span class="col-user">monitor</span><span class="col-cmd">grafana-server + prometheus <span class="skill-cat cat-monitor">MONITOR</span></span><span class="col-cpu">74.5</span></div>
+      <div class="process-row stagger-item"><span class="col-pid">1008</span><span class="col-user">monitor</span><span class="col-cmd">datadog-agent --config <span class="skill-cat cat-monitor">MON</span></span><span class="col-cpu">77.0</span></div>
+      <div class="process-row stagger-item"><span class="col-pid">1009</span><span class="col-user">monitor</span><span class="col-cmd">grafana + prometheus <span class="skill-cat cat-monitor">MON</span></span><span class="col-cpu">74.5</span></div>
       <div class="process-row stagger-item"><span class="col-pid">1010</span><span class="col-user">dhanush</span><span class="col-cmd">helm upgrade --install <span class="skill-cat cat-devops">DEVOPS</span></span><span class="col-cpu">72.1</span></div>
       <div class="process-row stagger-item"><span class="col-pid">1011</span><span class="col-user">root</span><span class="col-cmd">azure-cli + gcloud <span class="skill-cat cat-cloud">CLOUD</span></span><span class="col-cpu">69.3</span></div>
       <div class="process-row stagger-item"><span class="col-pid">1012</span><span class="col-user">dhanush</span><span class="col-cmd">go run main.go <span class="skill-cat cat-lang">LANG</span></span><span class="col-cpu">67.0</span></div>
-      <div class="process-row stagger-item"><span class="col-pid">1013</span><span class="col-user">sec-ops</span><span class="col-cmd">aws-waf + devsecops-scan <span class="skill-cat cat-security">SECURITY</span></span><span class="col-cpu">64.2</span></div>
-      <div class="process-row stagger-item"><span class="col-pid">1014</span><span class="col-user">dhanush</span><span class="col-cmd">kafka-streams + elk-stack <span class="skill-cat cat-monitor">MONITOR</span></span><span class="col-cpu">61.8</span></div>
+      <div class="process-row stagger-item"><span class="col-pid">1013</span><span class="col-user">sec-ops</span><span class="col-cmd">aws-waf + devsecops-scan <span class="skill-cat cat-security">SEC</span></span><span class="col-cpu">64.2</span></div>
+      <div class="process-row stagger-item"><span class="col-pid">1014</span><span class="col-user">dhanush</span><span class="col-cmd">kafka-streams + elk-stack <span class="skill-cat cat-monitor">MON</span></span><span class="col-cpu">61.8</span></div>
       <div class="process-row stagger-item"><span class="col-pid">1015</span><span class="col-user">dhanush</span><span class="col-cmd">bash + powershell + java <span class="skill-cat cat-lang">LANG</span></span><span class="col-cpu">59.5</span></div>
       <div class="process-row stagger-item"><span class="col-pid">1016</span><span class="col-user">dhanush</span><span class="col-cmd">react + node.js + html/css <span class="skill-cat cat-lang">LANG</span></span><span class="col-cpu">57.0</span></div>
     </div>
   </section>
 
-  <!-- ═══════════════════ EXPERIENCE ═══════════════════ -->
+  <!-- EXPERIENCE -->
   <section id="sec-exp">
     <div class="prompt-line">
-      <span class="user-path">dhanush@bectran:~$</span>
+      <span class="user-path">dhanush@bectran</span><span class="chevron">❯</span>
       <span class="command-text" id="cmd-exp"></span><span class="cursor" id="cursor-exp"></span>
     </div>
     <div class="command-output" id="out-exp">
-      <div class="mb-3 text-muted" style="font-size:0.85rem;">total 3</div>
-
+      <div class="mb-3" style="font-size:0.82rem; color:var(--text-dim);">total 3</div>
       <div class="file-row stagger-item">
         <div class="file-meta">
-          <span class="perms">-rwxr-xr-x</span>
-          <span class="owner">root</span>
-          <span class="date">Oct 2021 – Aug 2022</span>
-          <span class="filename">./IIT_Madras_DevOps.sh</span>
+          <span class="perms">-rwxr-xr-x</span><span class="owner">root</span>
+          <span class="date">Oct 2021 – Aug 2022</span><span class="filename">./IIT_Madras_DevOps.sh</span>
         </div>
         <div class="file-desc">
-          # Architected AWS infrastructure from the ground up for <span class="tech">450 big data telemetry devices</span> with NLBs.<br>
-          # <span class="highlight">Reduced cloud costs by 17%</span> via auto-scaling groups, spot instances &amp; intelligent tiering.<br>
+          # Architected AWS infra from scratch for <span class="tech">450 big data telemetry devices</span> with NLBs.<br>
+          # <span class="highlight">Reduced cloud costs by 17%</span> via auto-scaling, spot instances &amp; intelligent tiering.<br>
           # Managed <span class="tech">MongoDB, PostgreSQL &amp; DynamoDB</span> with read replicas for HA.<br>
           # Automated DB backups to S3 with lifecycle policies using <span class="tech">Python &amp; Bash</span>.<br>
-          # Deployed IoT broker on multi-stage <span class="tech">Node-RED Docker</span> images on <span class="tech">EKS</span>.<br>
-          # Built observability with <span class="tech">Prometheus + Grafana</span>; IaC via <span class="tech">Terraform + Ansible</span>.
+          # IoT broker on multi-stage <span class="tech">Node-RED Docker</span> on <span class="tech">EKS</span>.<br>
+          # Observability via <span class="tech">Prometheus + Grafana</span>; IaC with <span class="tech">Terraform + Ansible</span>.
         </div>
       </div>
-
       <div class="file-row stagger-item">
         <div class="file-meta">
-          <span class="perms">-rwxr-xr-x</span>
-          <span class="owner">dhanush</span>
-          <span class="date">Aug 2022 – Dec 2022</span>
-          <span class="filename">./Donyati_DevOps_Eng.py</span>
+          <span class="perms">-rwxr-xr-x</span><span class="owner">dhanush</span>
+          <span class="date">Aug 2022 – Dec 2022</span><span class="filename">./Donyati_DevOps_Eng.py</span>
         </div>
         <div class="file-desc">
-          # CI/CD via <span class="tech">Jenkins, GitHub Actions &amp; ArgoCD</span> deploying multi-stage Docker to <span class="tech">K8s</span>.<br>
-          # Custom <span class="tech">VPCs</span> with public/private subnets, ALBs &amp; auto-scaling for large-scale web apps.<br>
-          # Migrated scripts to <span class="tech">AWS Lambda</span>; implemented shift-left with <span class="tech">Nmap &amp; Crowdstrike</span>.<br>
+          # CI/CD via <span class="tech">Jenkins, GitHub Actions &amp; ArgoCD</span> → multi-stage Docker to <span class="tech">K8s</span>.<br>
+          # Custom <span class="tech">VPCs</span> with public/private subnets, ALBs &amp; auto-scaling for large-scale apps.<br>
+          # Migrated scripts to <span class="tech">AWS Lambda</span>; shift-left with <span class="tech">Nmap &amp; Crowdstrike</span>.<br>
           # <span class="highlight">Trained 14 graduate engineers</span> on Linux administration &amp; AWS best practices.
         </div>
       </div>
-
       <div class="file-row stagger-item">
         <div class="file-meta">
           <span class="perms">drwxrwxrwx</span>
           <span class="owner" style="color:var(--color-success)">current</span>
-          <span class="date">Jan 2025 – Present</span>
-          <span class="filename dir">./Bectran_DevOps_Engineer/</span>
+          <span class="date">Jan 2025 – Present</span><span class="filename dir">./Bectran_DevOps_Engineer/</span>
         </div>
         <div class="file-desc" style="color: var(--text-main);">
-          # <b style="color:var(--color-success)">HEAD pointer</b> (Active Role)<br>
-          # Deployment pipelines on <span class="tech">GitHub Actions</span> with automated backups, API testing, email reports &amp; rollback-on-failure.<br>
-          # Shift-left philosophy: implemented <span class="tech">SAST/DAST</span> tooling &amp; security best practices across cloud &amp; endpoints.<br>
-          # Managed evidence collection for <span class="highlight">SOC audit &amp; PCI-DSS compliance</span>.<br>
-          # Onboarded <span class="tech">Crowdstrike EDR</span> for cloud infra; configured <span class="tech">AWS WAF</span> to block threats at the edge.<br>
-          # Built <span class="tech">Datadog</span> log pipelines &amp; alerts for prod monitoring; in-app WAF for context-based attack detection.
+          # <b style="color:var(--color-success)">⬤ HEAD</b> (Active)<br>
+          # Deployment pipelines on <span class="tech">GitHub Actions</span> — automated backups, API testing &amp; rollback-on-failure.<br>
+          # Shift-left: <span class="tech">SAST/DAST</span> tooling &amp; security best practices across cloud &amp; endpoints.<br>
+          # Evidence collection for <span class="highlight">SOC audit &amp; PCI-DSS compliance</span>.<br>
+          # Onboarded <span class="tech">Crowdstrike EDR</span>; configured <span class="tech">AWS WAF</span> to block threats at edge.<br>
+          # Built <span class="tech">Datadog</span> log pipelines &amp; alerting for prod; in-app WAF for context-based detection.
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════════ EDUCATION ═══════════════════ -->
-  <section id="sec-edu" style="min-height: 50vh;">
+  <!-- EDUCATION -->
+  <section id="sec-edu" style="min-height: 55vh;">
     <div class="prompt-line">
-      <span class="user-path">dhanush@bectran:~$</span>
+      <span class="user-path">dhanush@bectran</span><span class="chevron">❯</span>
       <span class="command-text" id="cmd-edu"></span><span class="cursor" id="cursor-edu"></span>
     </div>
     <div class="command-output" id="out-edu">
-      <div class="mb-3 text-muted" style="font-size:0.85rem;">
-        # /etc/education.conf — academic credentials
-      </div>
+      <div class="mb-3" style="font-size:0.8rem; color:var(--text-dim);"># /etc/education.conf</div>
       <div class="edu-block stagger-item">
         <div class="edu-degree"><i class="bi bi-mortarboard me-2"></i>M.S. Cybersecurity</div>
         <div class="edu-school">California State University – Dominguez Hills, Carson, CA</div>
-        <div class="edu-detail">Jan 2023 – Dec 2024 &nbsp;|&nbsp; GPA: <span style="color:var(--color-success); font-weight:700;">3.94</span></div>
+        <div class="edu-detail">Jan 2023 – Dec 2024 &nbsp;&middot;&nbsp; GPA: <span style="color:var(--color-success); font-weight:700;">3.94</span></div>
       </div>
       <div class="edu-block stagger-item">
         <div class="edu-degree"><i class="bi bi-mortarboard me-2"></i>B.Tech</div>
@@ -710,17 +599,16 @@
     </div>
   </section>
 
-  <!-- ═══════════════════ PROJECTS ═══════════════════ -->
+  <!-- PROJECTS -->
   <section id="sec-k8s">
     <div class="prompt-line">
-      <span class="user-path">dhanush@bectran:~$</span>
+      <span class="user-path">dhanush@bectran</span><span class="chevron">❯</span>
       <span class="command-text" id="cmd-k8s"></span><span class="cursor" id="cursor-k8s"></span>
     </div>
     <div class="command-output" id="out-k8s">
       <div class="pod-header stagger-item">
         <span>NAME</span><span>READY</span><span>STATUS</span><span>RESTARTS</span><span>AGE</span>
       </div>
-
       <div class="pod-row stagger-item">
         <span class="pod-name">sales-dashboard-api</span>
         <span style="color:var(--text-muted)">1/1</span>
@@ -729,7 +617,6 @@
         <span style="color:var(--text-muted)">14d</span>
       </div>
       <div class="pod-desc stagger-item">> AI-driven dashboard using Python/OpenSearch.</div>
-
       <div class="pod-row stagger-item">
         <span class="pod-name">ransomware-sim-job</span>
         <span style="color:var(--text-muted)">0/1</span>
@@ -738,7 +625,6 @@
         <span style="color:var(--text-muted)">5d</span>
       </div>
       <div class="pod-desc stagger-item">> Incident response simulation for security audit.</div>
-
       <div class="pod-row stagger-item">
         <span class="pod-name">terraform-infra-prov</span>
         <span style="color:var(--text-muted)">2/2</span>
@@ -750,10 +636,10 @@
     </div>
   </section>
 
-  <!-- ═══════════════════ CERTS ═══════════════════ -->
+  <!-- CERTS -->
   <section id="sec-certs" style="min-height: 55vh;">
     <div class="prompt-line">
-      <span class="user-path">dhanush@bectran:~/certs$</span>
+      <span class="user-path">dhanush@bectran:~/certs</span><span class="chevron">❯</span>
       <span class="command-text" id="cmd-certs"></span><span class="cursor" id="cursor-certs"></span>
     </div>
     <div class="command-output" id="out-certs">
@@ -761,434 +647,203 @@
         <div class="col-md-6 stagger-item">
           <div class="cert-block">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <small class="text-muted">AWS-SAA-C03</small>
+              <small style="color:var(--text-dim)">AWS-SAA-C03</small>
               <span class="status-ok">VERIFIED</span>
             </div>
-            <h5 class="mb-1" style="color:var(--color-peach); font-size:0.95rem;">AWS Solutions Architect – Associate</h5>
-            <small class="text-muted">Amazon Web Services</small>
+            <h5 class="mb-1" style="color:var(--color-peach); font-size:0.92rem; font-family:var(--font-display);">AWS Solutions Architect – Associate</h5>
+            <small style="color:var(--text-muted)">Amazon Web Services</small>
           </div>
         </div>
         <div class="col-md-6 stagger-item">
           <div class="cert-block">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <small class="text-muted">HASH-003</small>
+              <small style="color:var(--text-dim)">HASH-003</small>
               <span class="status-ok">VERIFIED</span>
             </div>
-            <h5 class="mb-1" style="color:var(--color-cmd); font-size:0.95rem;">Terraform Associate</h5>
-            <small class="text-muted">HashiCorp</small>
+            <h5 class="mb-1" style="color:var(--color-purple); font-size:0.92rem; font-family:var(--font-display);">Terraform Associate</h5>
+            <small style="color:var(--text-muted)">HashiCorp</small>
           </div>
         </div>
         <div class="col-md-6 stagger-item">
           <div class="cert-block">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <small class="text-muted">SY0-601</small>
+              <small style="color:var(--text-dim)">SY0-601</small>
               <span class="status-ok">VERIFIED</span>
             </div>
-            <h5 class="mb-1" style="color:var(--color-error); font-size:0.95rem;">CompTIA Security+</h5>
-            <small class="text-muted">CompTIA</small>
+            <h5 class="mb-1" style="color:var(--color-error); font-size:0.92rem; font-family:var(--font-display);">CompTIA Security+</h5>
+            <small style="color:var(--text-muted)">CompTIA</small>
           </div>
         </div>
         <div class="col-md-6 stagger-item">
           <div class="cert-block">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <small class="text-muted">AZ-900</small>
+              <small style="color:var(--text-dim)">AZ-900</small>
               <span class="status-ok">VERIFIED</span>
             </div>
-            <h5 class="mb-1" style="color:var(--color-teal); font-size:0.95rem;">Azure Fundamentals</h5>
-            <small class="text-muted">Microsoft</small>
+            <h5 class="mb-1" style="color:var(--color-cyan); font-size:0.92rem; font-family:var(--font-display);">Azure Fundamentals</h5>
+            <small style="color:var(--text-muted)">Microsoft</small>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════════ INTERACTIVE TERMINAL ═══════════════════ -->
+  <!-- INTERACTIVE TERMINAL -->
   <section id="sec-interactive" style="min-height: 50vh; align-items: flex-start; justify-content: flex-start;">
-    <div class="text-muted mb-3" style="font-size:0.82rem;">
-      # Interactive Session — type <span style="color:var(--color-cmd)">help</span> for commands, or try the classics.
+    <div style="font-size:0.76rem; color:var(--text-dim); margin-bottom: 1rem;">
+      # Interactive Session — type <span style="color:var(--color-cmd)">help</span> for commands
     </div>
     <div id="cli-output" style="width: 100%;"></div>
     <div class="prompt-line" style="width: 100%;">
-      <span class="user-path">guest@portfolio:~$</span>
+      <span class="user-path">guest@portfolio</span><span class="chevron">❯</span>
       <input type="text" id="cli-input" autocomplete="off" spellcheck="false" placeholder="Type a command...">
     </div>
   </section>
 
-  <!-- STATUS BAR -->
   <div class="status-bar">
-    <div class="sb-section sb-blue"><i class="bi bi-terminal me-1"></i> NORMAL</div>
+    <div class="sb-section sb-blue"><i class="bi bi-terminal me-1"></i>NORMAL</div>
     <div class="sb-section sb-purple"><i class="bi bi-git me-1"></i>master*</div>
-    <div class="sb-section sb-dark">~/portfolio/index.html</div>
-    <div class="sb-section text-muted small">utf-8</div>
-    <div class="sb-section text-muted small">linux</div>
+    <div class="sb-section sb-dark" id="sb-section-name">~/whoami</div>
+    <div class="sb-section" style="color:var(--text-dim)">utf-8</div>
+    <div class="sb-section" style="color:var(--text-dim)">linux</div>
     <div class="sb-section sb-green" id="clock">00:00:00</div>
   </div>
 
   <script>
-    // ==============================
-    // 1. BOOT SEQUENCE
-    // ==============================
     const bootText = [
-      "[  0.000000] Linux version 6.8.0-generic (dhanush@server)",
-      "[  0.002134] Command line: BOOT_IMAGE=/boot/vmlinuz root=UUID=portfolio-v2",
-      "[  0.045420] Kernel command line: init_skills=true load_experience=1",
-      "[  0.112300] secureboot: Secure boot enabled",
-      "[  0.243000] Detected CPU: Dhanush Neural Engine (1 User, 100% Focus)",
-      "[  0.450000] Memory: 32GB RAM allocated to Kubernetes Clusters",
-      "[  0.890000] TCP/IP hash table entries: 65536",
-      "[  1.200000] mounting filesystems...",
-      "[  1.500000] EXT4-fs (sda1): mounted filesystem with ordered data mode",
-      "[  1.800000] systemd[1]: Starting DevOps Orchestration Service...",
-      "[  2.100000] systemd[1]: Started Docker Application Container Engine.",
-      "[  2.400000] k8s-agent: connecting to master node...",
-      "[  2.800000] k8s-agent: node 'dhanush-portfolio' is Ready",
-      "[  3.100000] Loading interface modules: [HTML5] [CSS3] [JS]",
-      "[  3.500000] Welcome to Dhanush OS."
+      "[  0.000] Linux version 6.8.0-generic (dhanush@server)",
+      "[  0.002] BOOT_IMAGE=/boot/vmlinuz root=UUID=portfolio-v3",
+      "[  0.045] Kernel: init_skills=true load_experience=1",
+      "[  0.112] secureboot: Secure boot enabled",
+      "[  0.243] CPU: Dhanush Neural Engine (1 User, 100% Focus)",
+      "[  0.450] Memory: 32GB allocated → Kubernetes Clusters",
+      "[  0.890] TCP/IP hash table: 65536 entries",
+      "[  1.200] Mounting filesystems...",
+      "[  1.500] EXT4-fs (sda1): mounted, ordered data mode",
+      "[  1.800] systemd[1]: Starting DevOps Orchestration...",
+      "[  2.100] systemd[1]: Started Docker Container Engine.",
+      "[  2.400] k8s-agent: connecting to master node...",
+      "[  2.800] k8s-agent: node 'dhanush-portfolio' Ready",
+      "[  3.100] Loading: [HTML5] [CSS3] [JS] [WebGL]",
+      "[  3.500] Welcome to Dhanush OS v3."
+    ];
+    const bootScreen=document.getElementById('boot-screen'),bootContainer=document.getElementById('boot-text'),bootProgress=document.getElementById('boot-progress');
+    let bootIndex=0;
+    function runBoot(){
+      if(bootIndex<bootText.length){
+        const line=document.createElement('div');line.className='log-line';
+        let c=bootText[bootIndex];
+        if(/Started|Ready|enabled|mounted/i.test(c))c=c.replace(/(Started|Ready|enabled|mounted)/gi,'<span class="log-ok">$1</span>');
+        line.innerHTML=c;bootContainer.appendChild(line);
+        bootProgress.style.width=((bootIndex+1)/bootText.length*100)+'%';
+        bootIndex++;setTimeout(runBoot,Math.random()*90+25);
+      }else{
+        setTimeout(()=>{bootScreen.style.transition='opacity 0.6s';bootScreen.style.opacity='0';
+        setTimeout(()=>{bootScreen.style.display='none'},600)},600);
+      }
+    }
+
+    const sections=[
+      {id:'hero',command:'whoami',label:'~/whoami'},
+      {id:'skills',command:'top -b -n 1 | head -n 20',label:'~/skills'},
+      {id:'exp',command:'ls -ltr ~/experience',label:'~/experience'},
+      {id:'edu',command:'cat /etc/education.conf',label:'~/education'},
+      {id:'k8s',command:'kubectl get pods -n projects',label:'~/projects'},
+      {id:'certs',command:'./verify_certs.sh --verbose',label:'~/certs'}
     ];
 
-    const bootScreen = document.getElementById('boot-screen');
-    const bootContainer = document.getElementById('boot-text');
-    let bootIndex = 0;
-
-    function runBoot() {
-      if (bootIndex < bootText.length) {
-        const line = document.createElement('div');
-        line.className = 'log-line';
-        let content = bootText[bootIndex];
-        if (content.includes('Started') || content.includes('Ready') || content.includes('Mounted') || content.includes('enabled')) {
-          content = content.replace(/(Started|Ready|Mounted|enabled)/, '<span class="log-ok">$1</span>');
-        }
-        line.innerHTML = `<span class="log-time">${content.substring(0, content.indexOf(']') + 1)}</span>${content.substring(content.indexOf(']') + 1)}`;
-        bootContainer.appendChild(line);
-        bootIndex++;
-        setTimeout(runBoot, Math.random() * 100 + 30);
-      } else {
-        setTimeout(() => {
-          bootScreen.style.transition = 'opacity 0.5s';
-          bootScreen.style.opacity = '0';
-          setTimeout(() => { bootScreen.style.display = 'none'; }, 500);
-        }, 800);
-      }
+    function typeCommand(elId,text,speed,cb){
+      let i=0;const el=document.getElementById(elId),k=elId.split('-')[1],cur=document.getElementById('cursor-'+k);
+      if(cur)cur.classList.add('typing');
+      function t(){if(i<text.length){el.innerHTML+=text.charAt(i);i++;setTimeout(t,speed)}
+      else{if(cur)cur.classList.remove('typing');if(cb)cb()}}t();
     }
 
-    // ==============================
-    // 2. TYPING ENGINE + STAGGERED ANIMATION
-    // ==============================
-    const sections = [
-      { id: 'hero',   command: 'whoami' },
-      { id: 'skills', command: 'top -b -n 1 | head -n 20' },
-      { id: 'exp',    command: 'ls -ltr /home/dhanush/experience' },
-      { id: 'edu',    command: 'cat /etc/education.conf' },
-      { id: 'k8s',    command: 'kubectl get pods --namespace=projects' },
-      { id: 'certs',  command: './verify_certs.sh --verbose' }
-    ];
+    function animateStagger(o){o.classList.add('visible');o.querySelectorAll('.stagger-item').forEach((item,i)=>{item.style.animationDelay=`${i*55}ms`})}
 
-    function typeCommand(elementId, text, speed, callback) {
-      let i = 0;
-      const element = document.getElementById(elementId);
-      const sectionKey = elementId.split('-')[1];
-      const cursor = document.getElementById('cursor-' + sectionKey);
-      if (cursor) cursor.classList.add('typing');
+    const sObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){const sid=e.target.id.replace('sec-',''),cfg=sections.find(s=>s.id===sid),cmd=document.getElementById('cmd-'+sid);if(cmd&&cmd.innerHTML===''&&cfg)typeCommand('cmd-'+sid,cfg.command,30,()=>animateStagger(document.getElementById('out-'+sid)))}})},{threshold:0.25});
+    sections.forEach(s=>{const el=document.getElementById('sec-'+s.id);if(el)sObs.observe(el)});
 
-      function type() {
-        if (i < text.length) {
-          element.innerHTML += text.charAt(i);
-          i++;
-          setTimeout(type, speed);
-        } else {
-          if (cursor) cursor.classList.remove('typing');
-          if (callback) callback();
-        }
-      }
-      type();
+    const quoteText='"Automating the boring stuff, securing the important stuff."';
+    function typeQuote(){const el=document.getElementById('hero-quote');let i=0;function t(){if(i<quoteText.length){el.textContent+=quoteText[i];i++;setTimeout(t,35)}}setTimeout(t,1800)}
+
+    const navDots=document.querySelectorAll('.nav-dot'),sLabel=document.getElementById('sb-section-name');
+    navDots.forEach(d=>d.addEventListener('click',()=>document.getElementById(d.dataset.target).scrollIntoView({behavior:'smooth'})));
+    const navObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){const id=e.target.id;navDots.forEach(d=>d.classList.remove('active'));const a=document.querySelector(`.nav-dot[data-target="${id}"]`);if(a)a.classList.add('active');const c=sections.find(s=>'sec-'+s.id===id);if(c)sLabel.textContent=c.label;else if(id==='sec-interactive')sLabel.textContent='~/terminal'}})},{threshold:0.35});
+    document.querySelectorAll('section').forEach(s=>navObs.observe(s));
+
+    const pBar=document.getElementById('scroll-progress');
+    window.addEventListener('scroll',()=>{pBar.style.width=(window.scrollY/(document.documentElement.scrollHeight-window.innerHeight)*100)+'%'});
+
+    setInterval(()=>{document.getElementById('clock').innerText=new Date().toLocaleTimeString()},1000);
+
+    function updateMetrics(){
+      const cpu=(50+Math.random()*45).toFixed(1),mem=Math.floor(11000+Math.random()*9000);
+      document.getElementById('cpu-val').textContent=cpu+'%';document.getElementById('cpu-bar').style.width=cpu+'%';
+      document.getElementById('mem-val').textContent=mem+' MB';document.getElementById('mem-bar').style.width=((mem/32000)*100)+'%';
+      document.getElementById('net-val').textContent=`↑ ${Math.floor(Math.random()*500+30)} KB/s  ↓ ${Math.floor(Math.random()*2000+100)} KB/s`;
+      const d=Date.now()-new Date('2024-01-15'),days=Math.floor(d/864e5),h=Math.floor((d%864e5)/36e5),m=Math.floor((d%36e5)/6e4);
+      document.getElementById('uptime-val').textContent=`${days}d ${h}h ${m}m`;
+    }
+    setInterval(updateMetrics,2500);updateMetrics();
+
+    function startMatrix(dur){
+      const c=document.getElementById('matrix-canvas');c.style.display='block';const ctx=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;
+      const cols=Math.floor(c.width/15),drops=Array(cols).fill(1),chars='ｱｲｳｴｵｶｷｸｹｺ01アカサタナ';
+      const iv=setInterval(()=>{ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#0f0';ctx.font='13px JetBrains Mono';
+      for(let i=0;i<drops.length;i++){ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*15,drops[i]*15);if(drops[i]*15>c.height&&Math.random()>0.975)drops[i]=0;drops[i]++}},33);
+      setTimeout(()=>{clearInterval(iv);c.style.display='none';ctx.clearRect(0,0,c.width,c.height)},dur);
     }
 
-    function animateStaggerChildren(outputEl) {
-      outputEl.classList.add('visible');
-      const items = outputEl.querySelectorAll('.stagger-item');
-      items.forEach((item, i) => {
-        item.style.animationDelay = `${i * 60}ms`;
-      });
-    }
+    const konami=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];let ki=0;
+    document.addEventListener('keydown',e=>{if(document.activeElement===document.getElementById('cli-input'))return;if(e.key===konami[ki]){ki++;if(ki===konami.length){ki=0;document.body.classList.add('crt-mode');setTimeout(()=>document.body.classList.remove('crt-mode'),8000)}}else{ki=0}});
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const sectionId = entry.target.id.replace('sec-', '');
-          const config = sections.find(s => s.id === sectionId);
-          const cmdElement = document.getElementById('cmd-' + sectionId);
+    const input=document.getElementById('cli-input'),cliOutput=document.getElementById('cli-output');
+    const nfHTML=`<div class="neofetch-box"><div class="neofetch-ascii">    ____  __  
+   / __ \\/ /_ 
+  / / / / __ \\
+ / /_/ / / / /
+/_____/_/ /_/ </div><div class="neofetch-info"><div><span class="nf-label">OS:</span> <span class="nf-val">Dhanush OS 3.0 LTS</span></div><div><span class="nf-label">Host:</span> <span class="nf-val">Bectran / Chicago, IL</span></div><div><span class="nf-label">Kernel:</span> <span class="nf-val">6.8.0-devops-generic</span></div><div><span class="nf-label">Uptime:</span> <span class="nf-val">3+ years in DevOps</span></div><div><span class="nf-label">Shell:</span> <span class="nf-val">bash + python + golang</span></div><div><span class="nf-label">DE:</span> <span class="nf-val">AWS / K8s / Terraform / Docker</span></div><div><span class="nf-label">Certs:</span> <span class="nf-val">AWS SAA | Terraform | Sec+ | AZ-900</span></div><div><span class="nf-label">Edu:</span> <span class="nf-val">M.S. Cybersecurity (3.94 GPA)</span></div><div class="nf-colors"><div class="nf-color-dot" style="background:#7aa2f7"></div><div class="nf-color-dot" style="background:#ff9e64"></div><div class="nf-color-dot" style="background:#9ece6a"></div><div class="nf-color-dot" style="background:#e0af68"></div><div class="nf-color-dot" style="background:#f7768e"></div><div class="nf-color-dot" style="background:#bb9af7"></div><div class="nf-color-dot" style="background:#73daca"></div><div class="nf-color-dot" style="background:#7dcfff"></div></div></div></div>`;
 
-          if (cmdElement && cmdElement.innerHTML === '' && config) {
-            typeCommand('cmd-' + sectionId, config.command, 35, () => {
-              const outputEl = document.getElementById('out-' + sectionId);
-              animateStaggerChildren(outputEl);
-            });
-          }
-        }
-      });
-    }, { threshold: 0.25 });
-
-    sections.forEach(sec => {
-      const el = document.getElementById('sec-' + sec.id);
-      if (el) observer.observe(el);
-    });
-
-    // ==============================
-    // 3. SCROLL PROGRESS
-    // ==============================
-    const progressBar = document.getElementById('scroll-progress');
-    window.addEventListener('scroll', () => {
-      const docH = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = (window.scrollY / docH) * 100;
-      progressBar.style.width = pct + '%';
-    });
-
-    // ==============================
-    // 4. STATUS BAR CLOCK
-    // ==============================
-    setInterval(() => {
-      document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-    }, 1000);
-
-    // ==============================
-    // 5. METRICS SIDEBAR (Animated)
-    // ==============================
-    function updateMetrics() {
-      const cpu = (55 + Math.random() * 40).toFixed(1);
-      const mem = Math.floor(12000 + Math.random() * 8000);
-      const netUp = Math.floor(Math.random() * 500 + 50);
-      const netDown = Math.floor(Math.random() * 2000 + 200);
-
-      document.getElementById('cpu-val').textContent = cpu + '%';
-      document.getElementById('cpu-bar').style.width = cpu + '%';
-      document.getElementById('mem-val').textContent = mem + ' MB';
-      document.getElementById('mem-bar').style.width = ((mem / 32000) * 100) + '%';
-      document.getElementById('net-val').textContent = `↑ ${netUp} KB/s  ↓ ${netDown} KB/s`;
-
-      // Uptime
-      const baseDate = new Date('2024-01-15');
-      const now = new Date();
-      const diff = now - baseDate;
-      const days = Math.floor(diff / 86400000);
-      const hours = Math.floor((diff % 86400000) / 3600000);
-      const mins = Math.floor((diff % 3600000) / 60000);
-      document.getElementById('uptime-val').textContent = `${days}d ${hours}h ${mins}m`;
-    }
-    setInterval(updateMetrics, 2000);
-    updateMetrics();
-
-    // ==============================
-    // 6. MATRIX RAIN EFFECT
-    // ==============================
-    function startMatrix(duration) {
-      const canvas = document.getElementById('matrix-canvas');
-      canvas.style.display = 'block';
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      const cols = Math.floor(canvas.width / 16);
-      const drops = Array(cols).fill(1);
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*';
-
-      const matrixInterval = setInterval(() => {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#0f0';
-        ctx.font = '14px JetBrains Mono';
-
-        for (let i = 0; i < drops.length; i++) {
-          const char = chars[Math.floor(Math.random() * chars.length)];
-          ctx.fillText(char, i * 16, drops[i] * 16);
-          if (drops[i] * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
-          drops[i]++;
-        }
-      }, 35);
-
-      setTimeout(() => {
-        clearInterval(matrixInterval);
-        canvas.style.display = 'none';
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }, duration);
-    }
-
-    // ==============================
-    // 7. KONAMI CODE → CRT MODE
-    // ==============================
-    const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
-    let konamiIndex = 0;
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === konamiCode[konamiIndex]) {
-        konamiIndex++;
-        if (konamiIndex === konamiCode.length) {
-          konamiIndex = 0;
-          document.body.classList.add('crt-mode');
-          setTimeout(() => { document.body.classList.remove('crt-mode'); }, 8000);
-        }
-      } else {
-        konamiIndex = 0;
-      }
-    });
-
-    // ==============================
-    // 8. INTERACTIVE TERMINAL (EXPANDED)
-    // ==============================
-    const input = document.getElementById('cli-input');
-    const cliOutput = document.getElementById('cli-output');
-
-    const neofetchHTML = `
-      <div class="neofetch-box">
-        <div class="neofetch-ascii">
-      ____  __  
-     / __ \\/ /_ 
-    / / / / __ \\
-   / /_/ / / / /
-  /_____/_/ /_/ 
-        </div>
-        <div class="neofetch-info">
-          <div><span class="nf-label">OS:</span> <span class="nf-val">Dhanush OS 2.0 LTS</span></div>
-          <div><span class="nf-label">Host:</span> <span class="nf-val">Bectran / Chicago, IL</span></div>
-          <div><span class="nf-label">Kernel:</span> <span class="nf-val">6.8.0-devops-generic</span></div>
-          <div><span class="nf-label">Uptime:</span> <span class="nf-val">3+ years in DevOps</span></div>
-          <div><span class="nf-label">Shell:</span> <span class="nf-val">bash + python + golang</span></div>
-          <div><span class="nf-label">DE:</span> <span class="nf-val">AWS / K8s / Terraform / Docker</span></div>
-          <div><span class="nf-label">Certs:</span> <span class="nf-val">AWS SAA | Terraform | Sec+ | AZ-900</span></div>
-          <div><span class="nf-label">Education:</span> <span class="nf-val">M.S. Cybersecurity (3.94 GPA)</span></div>
-          <div class="nf-colors">
-            <div class="nf-color-dot" style="background:var(--color-cmd)"></div>
-            <div class="nf-color-dot" style="background:var(--color-path)"></div>
-            <div class="nf-color-dot" style="background:var(--color-success)"></div>
-            <div class="nf-color-dot" style="background:var(--color-warn)"></div>
-            <div class="nf-color-dot" style="background:var(--color-error)"></div>
-            <div class="nf-color-dot" style="background:var(--color-purple)"></div>
-            <div class="nf-color-dot" style="background:var(--color-teal)"></div>
-            <div class="nf-color-dot" style="background:var(--color-peach)"></div>
-          </div>
-        </div>
-      </div>`;
-
-    const commands = {
-      help: `
-        <div class="text-muted mb-1">Available Commands:</div>
-        <div><span style="color:var(--color-cmd)">neofetch</span>  — System info card</div>
-        <div><span style="color:var(--color-cmd)">skills</span>    — List skill categories</div>
-        <div><span style="color:var(--color-cmd)">certs</span>     — Show certifications</div>
-        <div><span style="color:var(--color-cmd)">history</span>   — Career timeline</div>
-        <div><span style="color:var(--color-cmd)">ls</span>        — List sections</div>
-        <div><span style="color:var(--color-cmd)">whoami</span>    — Identify user</div>
-        <div><span style="color:var(--color-cmd)">contact</span>   — Get contact info</div>
-        <div><span style="color:var(--color-cmd)">resume</span>    — Open resume PDF</div>
-        <div><span style="color:var(--color-cmd)">matrix</span>    — ???</div>
-        <div><span style="color:var(--color-cmd)">clear</span>     — Clear terminal</div>
-      `,
-      neofetch: neofetchHTML,
-      ls: '<span style="color:var(--color-purple)">about/  skills/  experience/  education/  projects/  certifications/</span>',
-      whoami: '<span style="color:var(--text-muted)">guest</span> (unauthorized — run <span style="color:var(--color-cmd)">sudo</span> to escalate)',
-      contact: `
-        <div><span style="color:var(--color-cmd)">Email:</span> dhanushnaidu77@gmail.com</div>
-        <div><span style="color:var(--color-cmd)">LinkedIn:</span> <a href="https://linkedin.com/in/dhanush--s/" target="_blank">linkedin.com/in/dhanush--s</a></div>
-        <div><span style="color:var(--color-cmd)">GitHub:</span> <a href="https://github.com/dhanush" target="_blank">github.com/dhanush</a></div>
-      `,
-      sudo: '<span style="color:var(--color-error)">[sudo] Permission denied: You are not Dhanush.</span>',
-      skills: `
-        <div style="color:var(--color-cmd)">☁ Cloud:</div><div class="ms-3 text-muted mb-2">AWS, Azure, GCP</div>
-        <div style="color:var(--color-success)">⚙ DevOps:</div><div class="ms-3 text-muted mb-2">K8s, Docker, Terraform, Ansible, Helm, Jenkins, GitHub Actions, ArgoCD, GitOps</div>
-        <div style="color:var(--color-error)">🛡 Security:</div><div class="ms-3 text-muted mb-2">Crowdstrike, WAF, SAST/DAST, DevSecOps, Nmap, SOC, PCI-DSS</div>
-        <div style="color:var(--color-purple)">📊 Monitoring:</div><div class="ms-3 text-muted mb-2">Datadog, Grafana, Prometheus, ELK, Kafka</div>
-        <div style="color:var(--color-warn)">💻 Languages:</div><div class="ms-3 text-muted mb-2">Python, Bash, PowerShell, Golang, Java, SQL</div>
-        <div style="color:var(--color-peach)">🌐 Web:</div><div class="ms-3 text-muted">React, Node.js, HTML/CSS</div>
-      `,
-      certs: `
-        <div><span style="color:var(--color-success)">✔</span> AWS Solutions Architect – Associate</div>
-        <div><span style="color:var(--color-success)">✔</span> HashiCorp Terraform Associate</div>
-        <div><span style="color:var(--color-success)">✔</span> CompTIA Security+</div>
-        <div><span style="color:var(--color-success)">✔</span> Microsoft Azure AZ-900</div>
-      `,
-      history: `
-        <div class="text-muted mb-1"># git log --oneline --reverse</div>
-        <div><span style="color:var(--color-warn)">a1b2c3d</span> <span style="color:var(--text-muted)">Sep 2017</span> — Start B.Tech at SRM Institute</div>
-        <div><span style="color:var(--color-warn)">e4f5a6b</span> <span style="color:var(--text-muted)">Jun 2021</span> — Graduate B.Tech</div>
-        <div><span style="color:var(--color-warn)">c7d8e9f</span> <span style="color:var(--text-muted)">Oct 2021</span> — DevOps Engineer @ IIT Madras</div>
-        <div><span style="color:var(--color-warn)">f0a1b2c</span> <span style="color:var(--text-muted)">Aug 2022</span> — DevOps Engineer @ Donyati</div>
-        <div><span style="color:var(--color-warn)">d3e4f5a</span> <span style="color:var(--text-muted)">Jan 2023</span> — Start M.S. Cybersecurity @ CSUDH</div>
-        <div><span style="color:var(--color-warn)">b6c7d8e</span> <span style="color:var(--text-muted)">Dec 2024</span> — Graduate M.S. (GPA: 3.94)</div>
-        <div><span style="color:var(--color-success)">HEAD</span> &nbsp;<span style="color:var(--text-muted)">Jan 2025</span> — <b>DevOps Engineer @ Bectran</b></div>
-      `,
-      resume: '__OPEN_RESUME__',
-      matrix: '__MATRIX__',
+    const cmds={
+      help:`<div style="color:var(--text-dim);margin-bottom:4px">Available Commands:</div><div><span style="color:var(--color-cmd)">neofetch</span>  — system info</div><div><span style="color:var(--color-cmd)">skills</span>    — skill categories</div><div><span style="color:var(--color-cmd)">certs</span>     — certifications</div><div><span style="color:var(--color-cmd)">history</span>   — career git log</div><div><span style="color:var(--color-cmd)">ls</span>        — list sections</div><div><span style="color:var(--color-cmd)">whoami</span>    — identify user</div><div><span style="color:var(--color-cmd)">contact</span>   — contact info</div><div><span style="color:var(--color-cmd)">resume</span>    — open resume</div><div><span style="color:var(--color-cmd)">theme</span>     — toggle CRT mode</div><div><span style="color:var(--color-cmd)">matrix</span>    — ???</div><div><span style="color:var(--color-cmd)">cowsay</span>    — moo</div><div><span style="color:var(--color-cmd)">clear</span>     — clear terminal</div>`,
+      neofetch:nfHTML,
+      ls:'<span style="color:var(--color-purple)">about/  skills/  experience/  education/  projects/  certs/</span>',
+      whoami:'<span style="color:var(--text-muted)">guest</span> (unauthorized — try <span style="color:var(--color-cmd)">sudo</span>)',
+      contact:`<div><span style="color:var(--color-cmd)">Email:</span> dhanushnaidu77@gmail.com</div><div><span style="color:var(--color-cmd)">LinkedIn:</span> <a href="https://linkedin.com/in/dhanush--s/" target="_blank">linkedin.com/in/dhanush--s</a></div><div><span style="color:var(--color-cmd)">GitHub:</span> <a href="https://github.com/dhanush" target="_blank">github.com/dhanush</a></div>`,
+      sudo:'<span style="color:var(--color-error)">[sudo] Permission denied: You are not Dhanush.</span>',
+      skills:`<div style="color:var(--color-cmd)">☁ Cloud</div><div style="color:var(--text-muted);margin:0 0 6px 12px">AWS, Azure, GCP</div><div style="color:var(--color-success)">⚙ DevOps</div><div style="color:var(--text-muted);margin:0 0 6px 12px">K8s, Docker, Terraform, Ansible, Helm, Jenkins, GitHub Actions, ArgoCD, GitOps</div><div style="color:var(--color-error)">🛡 Security</div><div style="color:var(--text-muted);margin:0 0 6px 12px">Crowdstrike, WAF, SAST/DAST, DevSecOps, Nmap, SOC, PCI-DSS</div><div style="color:var(--color-purple)">📊 Monitoring</div><div style="color:var(--text-muted);margin:0 0 6px 12px">Datadog, Grafana, Prometheus, ELK, Kafka, Hadoop</div><div style="color:var(--color-warn)">💻 Languages</div><div style="color:var(--text-muted);margin:0 0 6px 12px">Python, Bash, PowerShell, Golang, Java, SQL</div><div style="color:var(--color-peach)">🌐 Web</div><div style="color:var(--text-muted);margin:0 0 0 12px">React, Node.js, HTML/CSS</div>`,
+      certs:`<div><span style="color:var(--color-success)">✔</span> AWS Solutions Architect – Associate</div><div><span style="color:var(--color-success)">✔</span> HashiCorp Terraform Associate</div><div><span style="color:var(--color-success)">✔</span> CompTIA Security+</div><div><span style="color:var(--color-success)">✔</span> Microsoft Azure AZ-900</div>`,
+      history:`<div style="color:var(--text-dim);margin-bottom:4px"># git log --oneline --reverse</div><div><span style="color:var(--color-warn)">a1b2c3d</span> <span style="color:var(--text-dim)">Sep 2017</span> — Start B.Tech @ SRM</div><div><span style="color:var(--color-warn)">e4f5a6b</span> <span style="color:var(--text-dim)">Jun 2021</span> — Graduate B.Tech</div><div><span style="color:var(--color-warn)">c7d8e9f</span> <span style="color:var(--text-dim)">Oct 2021</span> — DevOps @ IIT Madras</div><div><span style="color:var(--color-warn)">f0a1b2c</span> <span style="color:var(--text-dim)">Aug 2022</span> — DevOps @ Donyati</div><div><span style="color:var(--color-warn)">d3e4f5a</span> <span style="color:var(--text-dim)">Jan 2023</span> — M.S. Cybersecurity @ CSUDH</div><div><span style="color:var(--color-warn)">b6c7d8e</span> <span style="color:var(--text-dim)">Dec 2024</span> — Graduate M.S. (3.94)</div><div><span style="color:var(--color-success);font-weight:700">HEAD</span> <span style="color:var(--text-dim)">Jan 2025</span> — <b style="color:var(--text-main)">DevOps @ Bectran</b></div>`,
     };
 
-    // Ping command handler
-    function handlePing(target) {
-      if (target.includes('linkedin')) {
-        return `<div class="text-muted">PING linkedin.com (13.107.42.14) 56 bytes of data.</div>
-        <div style="color:var(--color-success)">64 bytes from linkedin.com: time=12ms</div>
-        <div class="mt-1">--- opening connection ---</div>`;
-      }
-      return `<div class="text-muted">PING ${target} 56 bytes of data.</div>
-      <div style="color:var(--color-success)">64 bytes from ${target}: time=${Math.floor(Math.random()*80+5)}ms</div>`;
-    }
-
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        const raw = this.value.trim();
-        const cmd = raw.toLowerCase();
-        this.value = '';
-
-        // Echo command
-        const historyLine = document.createElement('div');
-        historyLine.innerHTML = `<span class="user-path">guest@portfolio:~$</span> ${raw}`;
-        cliOutput.appendChild(historyLine);
-
-        let response = '';
-
-        if (cmd === 'clear') {
-          cliOutput.innerHTML = '';
-          return;
-        } else if (cmd === 'matrix') {
-          startMatrix(5000);
-          response = '<span style="color:var(--color-success)">Follow the white rabbit...</span>';
-        } else if (cmd === 'resume') {
-          window.open('assets/Dhanush-Suresh-Resume.pdf', '_blank');
-          response = '<span style="color:var(--color-success)">Opening resume.pdf...</span>';
-        } else if (cmd.startsWith('ping ')) {
-          const target = cmd.substring(5);
-          response = handlePing(target);
-          if (target.includes('linkedin')) {
-            setTimeout(() => window.open('https://linkedin.com/in/dhanush--s/', '_blank'), 1500);
-          }
-        } else if (cmd === 'exit') {
-          response = '<span style="color:var(--color-warn)">There is no escape from this terminal.</span>';
-        } else if (cmd === 'rm -rf /' || cmd === 'rm -rf /*') {
-          response = '<span style="color:var(--color-error)">Nice try. Permission denied. 🛡️</span>';
-        } else if (commands[cmd]) {
-          response = commands[cmd];
-        } else if (cmd !== '') {
-          response = `<span style="color:var(--color-error)">bash: ${raw}: command not found</span> — type <span style="color:var(--color-cmd)">help</span>`;
-        }
-
-        if (response) {
-          const respDiv = document.createElement('div');
-          respDiv.className = 'cli-response';
-          respDiv.innerHTML = response;
-          cliOutput.appendChild(respDiv);
-        }
-
-        this.focus();
-        window.scrollTo(0, document.body.scrollHeight);
+    input.addEventListener('keydown',function(e){
+      if(e.key==='Enter'){
+        const raw=this.value.trim(),cmd=raw.toLowerCase();this.value='';
+        const h=document.createElement('div');h.innerHTML=`<span class="user-path">guest@portfolio</span><span class="chevron">❯</span> ${raw}`;cliOutput.appendChild(h);
+        let r='';
+        if(cmd==='clear'){cliOutput.innerHTML='';return}
+        else if(cmd==='matrix'){startMatrix(5000);r='<span style="color:var(--color-success)">Follow the white rabbit...</span>'}
+        else if(cmd==='resume'){window.open('assets/Dhanush-Suresh-Resume.pdf','_blank');r='<span style="color:var(--color-success)">Opening resume.pdf...</span>'}
+        else if(cmd==='theme'||cmd==='crt'){document.body.classList.toggle('crt-mode');r=document.body.classList.contains('crt-mode')?'<span style="color:var(--color-success)">CRT mode: ON</span>':'<span style="color:var(--color-warn)">CRT mode: OFF</span>'}
+        else if(cmd.startsWith('ping ')){const t=cmd.substring(5);r=`<div style="color:var(--text-dim)">PING ${t} 56 bytes</div><div style="color:var(--color-success)">64 bytes: time=${Math.floor(Math.random()*80+5)}ms</div>`;if(t.includes('linkedin'))setTimeout(()=>window.open('https://linkedin.com/in/dhanush--s/','_blank'),1500)}
+        else if(cmd==='exit'){r='<span style="color:var(--color-warn)">There is no escape from this terminal.</span>'}
+        else if(cmd==='rm -rf /'||cmd==='rm -rf /*'){r='<span style="color:var(--color-error)">Nice try. Permission denied.</span>'}
+        else if(cmd==='cat /etc/passwd'){r='<span style="color:var(--color-error)">Access denied. Incident logged.</span>'}
+        else if(cmd==='uptime'){r='<span style="color:var(--text-muted)">up 420 days, 1 user, load: 0.15, 0.08, 0.05</span>'}
+        else if(cmd==='date'){r=`<span style="color:var(--text-muted)">${new Date().toString()}</span>`}
+        else if(cmd==='pwd'){r='<span style="color:var(--text-muted)">/home/guest/portfolio</span>'}
+        else if(cmd.startsWith('echo ')){r=raw.substring(5)}
+        else if(cmd==='cowsay'||cmd.startsWith('cowsay ')){const msg=cmd==='cowsay'?'moo':raw.substring(7);const ln='_'.repeat(msg.length+2);r=`<pre style="color:var(--text-main);font-size:0.75rem"> ${ln}\n< ${msg} >\n ${'-'.repeat(msg.length+2)}\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||</pre>`}
+        else if(cmds[cmd]){r=cmds[cmd]}
+        else if(cmd!==''){r=`<span style="color:var(--color-error)">bash: ${raw}: command not found</span> — try <span style="color:var(--color-cmd)">help</span>`}
+        if(r){const d=document.createElement('div');d.className='cli-response';d.innerHTML=r;cliOutput.appendChild(d)}
+        this.focus();window.scrollTo(0,document.body.scrollHeight);
       }
     });
+    document.getElementById('sec-interactive').addEventListener('click',()=>input.focus());
 
-    // Focus CLI on click
-    document.getElementById('sec-interactive').addEventListener('click', () => input.focus());
-
-    // ==============================
-    // 9. INIT
-    // ==============================
-    window.addEventListener('load', () => {
-      runBoot();
-    });
+    window.addEventListener('load',()=>{runBoot();typeQuote()});
   </script>
 </body>
 </html>
