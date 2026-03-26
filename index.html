@@ -11,6 +11,7 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 
   <style>
     :root {
@@ -55,8 +56,11 @@
       content: '';
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background-image: radial-gradient(rgba(122,162,247,0.035) 1px, transparent 1px);
-      background-size: 32px 32px;
+      background-image:
+        radial-gradient(rgba(122,162,247,0.045) 1px, transparent 1px),
+        radial-gradient(rgba(187,154,247,0.02) 1px, transparent 1px);
+      background-size: 40px 40px, 20px 20px;
+      background-position: 0 0, 20px 20px;
       z-index: 0;
       pointer-events: none;
     }
@@ -116,6 +120,13 @@
       position: relative;
       z-index: 2;
     }
+    @media(min-width: 1300px) {
+      section {
+        margin-left: max(60px, 5vw);
+        margin-right: 0;
+        max-width: min(860px, 54vw);
+      }
+    }
 
     a {
       color: var(--color-cmd);
@@ -127,10 +138,16 @@
 
     .prompt-line {
       font-size: 1rem;
-      margin-bottom: 1.5rem;
-      display: flex;
+      margin-bottom: 1.8rem;
+      display: inline-flex;
       align-items: center;
       flex-wrap: wrap;
+      background: rgba(22,22,37,0.55);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 14px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 2px 18px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.03);
     }
     .user-path { color: var(--color-path); font-weight: 700; margin-right: 4px; }
     .chevron { color: var(--color-success); margin-right: 6px; font-weight: 700; }
@@ -188,24 +205,6 @@
       transition: width 0.15s; border-radius: 2px;
     }
 
-    .metrics-panel {
-      position: fixed; right: 12px; top: 50%; transform: translateY(-50%);
-      width: 200px; font-size: 0.68rem; color: var(--text-dim);
-      z-index: 1; pointer-events: none;
-      font-family: var(--font-mono); display: none; opacity: 0.45;
-    }
-    @media(min-width: 1250px) { .metrics-panel { display: block; } }
-    .metric-box {
-      border: 1px solid rgba(122,162,247,0.06); border-radius: 6px;
-      padding: 8px 10px; margin-bottom: 8px;
-      background: rgba(22,22,37,0.6); backdrop-filter: blur(4px);
-    }
-    .metric-label {
-      color: var(--text-dim); font-weight: 700; margin-bottom: 4px;
-      font-size: 0.58rem; text-transform: uppercase; letter-spacing: 1.5px;
-    }
-    .spark-bar { height: 2px; background: rgba(122,162,247,0.1); border-radius: 2px; margin: 4px 0; overflow: hidden; }
-    .spark-fill { height: 100%; border-radius: 2px; transition: width 1.5s ease; }
 
     .nav-dots {
       position: fixed; left: 16px; top: 50%; transform: translateY(-50%);
@@ -414,13 +413,143 @@
       .skill-cat { display: none; }
       .hero-link { font-size: 0.72rem; padding: 5px 10px; }
     }
+
+    /* ── Three.js canvas ── */
+    #three-canvas {
+      position: fixed;
+      right: 0; top: 0;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+      display: none;
+      opacity: 0.92;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.7) 35%, black 55%);
+      mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.25) 18%, rgba(0,0,0,0.7) 35%, black 55%);
+    }
+    @media(min-width: 1300px) { #three-canvas { display: block; width: min(800px, 58vw); } }
+    @media(min-width: 1600px) { #three-canvas { width: min(1000px, 62vw); } }
+
+    /* ── Section label / counter ── */
+    .sec-label {
+      font-size: 0.57rem;
+      color: var(--text-dim);
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      margin-bottom: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+    }
+    .sec-label-num {
+      color: var(--color-cmd);
+      background: rgba(122,162,247,0.08);
+      padding: 2px 8px;
+      border-radius: 3px;
+      border: 1px solid rgba(122,162,247,0.15);
+      font-size: 0.6rem;
+      letter-spacing: 1px;
+    }
+    .sec-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(122,162,247,0.14), transparent);
+      max-width: 240px;
+    }
+
+    /* ── Improved card glass ── */
+    .cert-block {
+      background: linear-gradient(135deg, rgba(22,22,37,0.92) 0%, rgba(28,28,48,0.75) 100%) !important;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.03) !important;
+    }
+    .cert-block:hover {
+      box-shadow: 0 8px 36px rgba(0,0,0,0.45), 0 0 0 1px rgba(158,206,106,0.18), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+    }
+    .edu-block {
+      background: linear-gradient(135deg, rgba(22,22,37,0.85), rgba(16,16,28,0.65)) !important;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    /* ── File row accent ── */
+    .file-row { border-left: 2px solid transparent !important; }
+    .file-row:hover {
+      border-left-color: rgba(122,162,247,0.28) !important;
+      background: rgba(122,162,247,0.025) !important;
+    }
+
+    /* ── Pod row hover ── */
+    .pod-row { padding: 6px 4px; border-radius: 4px; border-left: 2px solid transparent; transition: all 0.2s; }
+    .pod-row:hover { background: rgba(122,162,247,0.03); border-left-color: rgba(122,162,247,0.2); }
+
+    /* ── Scroll progress glow ── */
+    #scroll-progress { box-shadow: 0 0 10px rgba(122,162,247,0.45); }
+
+    /* ── Hero link glass ── */
+    .hero-link {
+      background: rgba(22,22,37,0.55);
+      backdrop-filter: blur(10px);
+    }
+    .hero-link:hover {
+      background: rgba(122,162,247,0.09) !important;
+      box-shadow: 0 4px 22px rgba(122,162,247,0.14) !important;
+    }
+
+    /* ── Status bar glow ── */
+    .status-bar { box-shadow: 0 -2px 24px rgba(0,0,0,0.5); }
+
+
+    /* ── Top header gradient ── */
+    .top-header {
+      background: linear-gradient(90deg, rgba(22,22,37,0.8), rgba(16,16,28,0.4)) !important;
+    }
+
+    /* ── Process row hover improved ── */
+    .process-row:hover {
+      background: linear-gradient(90deg, rgba(122,162,247,0.055), transparent) !important;
+    }
+
+    /* ── Hero subtitle ── */
+    .hero-subtitle { font-size: 1.18rem; }
+
+    /* ── Custom cursor ── */
+    *, *::before, *::after { cursor: none !important; }
+    #custom-cursor {
+      position: fixed;
+      width: 5px; height: 5px;
+      background: var(--color-cmd);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 999999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s, background 0.2s, opacity 0.2s;
+    }
+    #custom-cursor-ring {
+      position: fixed;
+      width: 28px; height: 28px;
+      border: 1px solid rgba(122,162,247,0.45);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 999998;
+      transform: translate(-50%, -50%);
+      transition: width 0.25s, height 0.25s, border-color 0.25s, opacity 0.2s;
+    }
+    #custom-cursor.hover    { transform: translate(-50%,-50%) scale(2.2); background: rgba(122,162,247,0.5); }
+    #custom-cursor-ring.hover { width: 44px; height: 44px; border-color: rgba(122,162,247,0.25); }
+    body.crt-mode #custom-cursor      { background: #00ff41; }
+    body.crt-mode #custom-cursor-ring { border-color: rgba(0,255,65,0.4); }
   </style>
 </head>
 <body>
 
+  <div id="custom-cursor"></div>
+  <div id="custom-cursor-ring"></div>
   <div id="scroll-progress"></div>
   <div id="crt-overlay"></div>
   <canvas id="matrix-canvas"></canvas>
+  <canvas id="three-canvas"></canvas>
 
   <div class="nav-dots" id="nav-dots">
     <button class="nav-dot active" data-target="sec-hero" data-label="whoami"></button>
@@ -437,30 +566,6 @@
     <div id="boot-progress-wrap"><div id="boot-progress"></div></div>
   </div>
 
-  <div class="metrics-panel" id="metrics-panel">
-    <div class="metric-box">
-      <div class="metric-label">CPU Load</div>
-      <div id="cpu-val" style="color:var(--color-success); font-size:1rem; font-weight:700;">0%</div>
-      <div class="spark-bar"><div class="spark-fill" id="cpu-bar" style="width:0%; background:var(--color-success);"></div></div>
-    </div>
-    <div class="metric-box">
-      <div class="metric-label">Memory</div>
-      <div id="mem-val" style="color:var(--color-cmd); font-size:1rem; font-weight:700;">0 MB</div>
-      <div class="spark-bar"><div class="spark-fill" id="mem-bar" style="width:0%; background:var(--color-cmd);"></div></div>
-    </div>
-    <div class="metric-box">
-      <div class="metric-label">Network I/O</div>
-      <div id="net-val" style="color:var(--color-peach); font-size:0.78rem; font-weight:600;">↑ 0 KB/s ↓ 0 KB/s</div>
-    </div>
-    <div class="metric-box">
-      <div class="metric-label">Uptime</div>
-      <div id="uptime-val" style="color:var(--color-teal); font-size:0.78rem;">0d 0h 0m</div>
-    </div>
-    <div class="metric-box">
-      <div class="metric-label">Containers</div>
-      <div style="color:var(--color-success); font-size:0.78rem;">12 running / 0 stopped</div>
-    </div>
-  </div>
 
   <!-- HERO -->
   <section id="sec-hero">
@@ -774,15 +879,6 @@
 
     setInterval(()=>{document.getElementById('clock').innerText=new Date().toLocaleTimeString()},1000);
 
-    function updateMetrics(){
-      const cpu=(50+Math.random()*45).toFixed(1),mem=Math.floor(11000+Math.random()*9000);
-      document.getElementById('cpu-val').textContent=cpu+'%';document.getElementById('cpu-bar').style.width=cpu+'%';
-      document.getElementById('mem-val').textContent=mem+' MB';document.getElementById('mem-bar').style.width=((mem/32000)*100)+'%';
-      document.getElementById('net-val').textContent=`↑ ${Math.floor(Math.random()*500+30)} KB/s  ↓ ${Math.floor(Math.random()*2000+100)} KB/s`;
-      const d=Date.now()-new Date('2024-01-15'),days=Math.floor(d/864e5),h=Math.floor((d%864e5)/36e5),m=Math.floor((d%36e5)/6e4);
-      document.getElementById('uptime-val').textContent=`${days}d ${h}h ${m}m`;
-    }
-    setInterval(updateMetrics,2500);updateMetrics();
 
     function startMatrix(dur){
       const c=document.getElementById('matrix-canvas');c.style.display='block';const ctx=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;
@@ -840,7 +936,299 @@
     });
     document.getElementById('sec-interactive').addEventListener('click',()=>input.focus());
 
-    window.addEventListener('load',()=>{runBoot();typeQuote()});
+    window.addEventListener('load',()=>{runBoot();typeQuote();injectSecLabels();initThreeScene();initCursor();initMagnetic();initScramble();});
+
+    // ── Custom cursor ──
+    function initCursor() {
+      const dot  = document.getElementById('custom-cursor');
+      const ring = document.getElementById('custom-cursor-ring');
+      let mx = -100, my = -100, rx = -100, ry = -100;
+
+      document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        dot.style.left = mx + 'px';
+        dot.style.top  = my + 'px';
+        window._mouseNX = mx / window.innerWidth  - 0.5;
+        window._mouseNY = my / window.innerHeight - 0.5;
+      });
+      document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+      document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+
+      // Ring follows dot with lag
+      (function animRing() {
+        rx += (mx - rx) * 0.14;
+        ry += (my - ry) * 0.14;
+        ring.style.left = rx + 'px';
+        ring.style.top  = ry + 'px';
+        requestAnimationFrame(animRing);
+      })();
+
+      // Expand on interactive elements
+      document.querySelectorAll('a, button, input').forEach(el => {
+        el.addEventListener('mouseenter', () => { dot.classList.add('hover'); ring.classList.add('hover'); });
+        el.addEventListener('mouseleave', () => { dot.classList.remove('hover'); ring.classList.remove('hover'); });
+      });
+    }
+
+    // ── Magnetic hero links ──
+    function initMagnetic() {
+      document.querySelectorAll('.hero-link').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+          btn.style.transition = 'transform 0.1s ease, box-shadow 0.3s, background 0.3s, color 0.3s, border-color 0.3s';
+        });
+        btn.addEventListener('mousemove', e => {
+          const r  = btn.getBoundingClientRect();
+          const dx = (e.clientX - (r.left + r.width  / 2)) * 0.30;
+          const dy = (e.clientY - (r.top  + r.height / 2)) * 0.30;
+          btn.style.transform = `translate(${dx}px, ${dy}px)`;
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.transition = 'transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.3s, background 0.3s, color 0.3s, border-color 0.3s';
+          btn.style.transform  = '';
+        });
+      });
+    }
+
+    // ── Text scramble ──
+    function scramble(el, finalText, delay, duration) {
+      const chars = '#@$%!?/\\[]{}=+*^<>01ABCDEF';
+      let frame = 0;
+      const total = Math.ceil((duration || 850) / 28);
+      setTimeout(() => {
+        const iv = setInterval(() => {
+          const progress = frame / total;
+          el.textContent = [...finalText].map((ch, i) => {
+            if (!/[a-zA-Z0-9]/.test(ch)) return ch;
+            return progress > i / finalText.length
+              ? ch
+              : chars[Math.floor(Math.random() * chars.length)];
+          }).join('');
+          if (++frame > total) { el.textContent = finalText; clearInterval(iv); }
+        }, 28);
+      }, delay || 0);
+    }
+
+    function initScramble() {
+      // Hero subtitle — fires after boot screen clears (~4.2s)
+      const sub = document.querySelector('.hero-subtitle');
+      if (sub) {
+        const txt = sub.textContent;
+        setTimeout(() => scramble(sub, txt, 0, 1000), 4200);
+      }
+      // Section label titles — fire on first intersection
+      const sObs2 = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          const t = e.target.querySelector('.sec-label-title');
+          if (t && !t.dataset.s) { t.dataset.s = '1'; scramble(t, t.textContent, 80, 700); }
+        });
+      }, { threshold: 0.3 });
+      document.querySelectorAll('section').forEach(s => sObs2.observe(s));
+    }
+
+    // ── Section counter labels ──
+    function injectSecLabels() {
+      const defs = [
+        { id:'sec-hero',        num:'01', title:'identity'    },
+        { id:'sec-skills',      num:'02', title:'processes'   },
+        { id:'sec-exp',         num:'03', title:'experience'  },
+        { id:'sec-edu',         num:'04', title:'education'   },
+        { id:'sec-k8s',         num:'05', title:'projects'    },
+        { id:'sec-certs',       num:'06', title:'credentials' },
+        { id:'sec-interactive', num:'07', title:'terminal'    },
+      ];
+      defs.forEach(({ id, num, title }) => {
+        const sec = document.getElementById(id);
+        if (!sec) return;
+        const el = document.createElement('div');
+        el.className = 'sec-label';
+        el.innerHTML = `<span class="sec-label-num">${num}</span><span class="sec-label-title">${title}</span>`;
+        sec.insertBefore(el, sec.firstChild);
+      });
+    }
+
+    // ── Three.js Infrastructure Security Graph ──
+    function initThreeScene() {
+      const cvs = document.getElementById('three-canvas');
+      if (!cvs || window.innerWidth < 1300 || typeof THREE === 'undefined') return;
+
+      const W = window.innerWidth >= 1600 ? Math.min(1000, Math.floor(window.innerWidth * 0.62)) : Math.min(800, Math.floor(window.innerWidth * 0.58)), H = window.innerHeight;
+      const renderer = new THREE.WebGLRenderer({ canvas: cvs, alpha: true, antialias: true });
+      renderer.setSize(W, H);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(52, W / H, 0.1, 100);
+      camera.position.set(0, 0, 8);
+
+      const grp = new THREE.Group();
+      scene.add(grp);
+
+      // [x, y, z, color(hex), size, label]
+      const ND = [
+        [  0.0,  0.0,  0.0, 0x7aa2f7, 0.22, 'k8s-master'  ],
+        [ -2.2,  0.9,  0.3, 0x73daca, 0.13, 'docker'       ],
+        [  2.0,  0.6, -0.4, 0xbb9af7, 0.13, 'terraform'    ],
+        [ -1.4, -1.7,  0.8, 0xf7768e, 0.13, 'waf'          ],
+        [  1.4, -1.4, -0.9, 0xe0af68, 0.11, 'ci/cd'        ],
+        [ -0.4,  2.1,  0.5, 0xbb9af7, 0.10, 'datadog'      ],
+        [  1.1,  1.9, -0.3, 0xf7768e, 0.10, 'crowdstrike'  ],
+        [ -2.6, -0.2, -0.4, 0xff9e64, 0.09, 'prometheus'   ],
+        [  0.5, -2.4,  0.9, 0x9ece6a, 0.09, 'argocd'       ],
+        [  2.8, -0.7,  0.6, 0xe0af68, 0.09, 'vault'        ],
+        [ -0.9,  0.7, -2.2, 0xff9e64, 0.10, 'aws'          ],
+        [  0.1, -2.8, -0.5, 0xf7768e, 0.08, 'scanner'      ],
+        [ -1.9,  1.8,  0.9, 0x73daca, 0.08, 'elk'          ],
+        [  2.1, -1.9, -0.3, 0xff9e64, 0.08, 'ansible'      ],
+      ];
+
+      const EP = [
+        [0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],
+        [1,12],[2,9],[2,10],[3,6],[3,11],[4,8],[5,6],[5,12],
+        [7,11],[8,13],[9,3],[6,9],[4,13],[10,0],[12,0],[11,6]
+      ];
+
+      // Build nodes
+      const nodes = ND.map(([x,y,z,color,size]) => {
+        const pos = new THREE.Vector3(x, y, z);
+
+        // Wireframe icosahedron shell
+        const g1 = new THREE.IcosahedronGeometry(size, 0);
+        const m1 = new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity: 0.72 });
+        const shell = new THREE.Mesh(g1, m1);
+        shell.position.copy(pos);
+        shell.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0);
+        grp.add(shell);
+
+        // Solid inner core
+        const g2 = new THREE.IcosahedronGeometry(size * 0.45, 0);
+        const m2 = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.45 });
+        const core = new THREE.Mesh(g2, m2);
+        core.position.copy(pos);
+        grp.add(core);
+
+        // Soft glow halo
+        const g3 = new THREE.SphereGeometry(size * 3, 8, 8);
+        const m3 = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.042 });
+        const halo = new THREE.Mesh(g3, m3);
+        halo.position.copy(pos);
+        grp.add(halo);
+
+        return { pos, shell, core, halo, color, size };
+      });
+
+      // Edges
+      EP.forEach(([i,j]) => {
+        const g = new THREE.BufferGeometry().setFromPoints([nodes[i].pos, nodes[j].pos]);
+        const m = new THREE.LineBasicMaterial({ color: 0x1a1e3c, transparent: true, opacity: 0.62 });
+        grp.add(new THREE.Line(g, m));
+      });
+
+      // Flowing particles along edges (bounce back and forth)
+      const particles = EP.map(([i,j]) => {
+        const color = Math.random() > 0.5 ? nodes[i].color : nodes[j].color;
+        const g = new THREE.SphereGeometry(0.022, 4, 4);
+        const m = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.88 });
+        const mesh = new THREE.Mesh(g, m);
+        grp.add(mesh);
+        return { from: nodes[i].pos, to: nodes[j].pos, t: Math.random(),
+                 speed: 0.0045 + Math.random()*0.006, dir: 1, mesh };
+      });
+
+      // Ambient dust particles
+      for (let i = 0; i < 28; i++) {
+        const th = Math.random()*Math.PI*2, ph = Math.random()*Math.PI;
+        const r = 1.8 + Math.random()*2.2;
+        const g = new THREE.SphereGeometry(0.011, 4, 4);
+        const m = new THREE.MeshBasicMaterial({ color: [0x7aa2f7,0x73daca,0xbb9af7][i%3], transparent: true, opacity: 0.12 + Math.random()*0.18 });
+        const p = new THREE.Mesh(g, m);
+        p.position.set(r*Math.sin(ph)*Math.cos(th), r*Math.sin(ph)*Math.sin(th), r*Math.cos(ph));
+        grp.add(p);
+      }
+
+      // Scan pulse ring
+      const ringG = new THREE.RingGeometry(0.05, 0.13, 64);
+      const ringM = new THREE.MeshBasicMaterial({ color: 0x7aa2f7, transparent: true, opacity: 0, side: THREE.DoubleSide });
+      const ring = new THREE.Mesh(ringG, ringM);
+      grp.add(ring);
+
+      // Threat alert ring (red)
+      const threatG = new THREE.RingGeometry(0.04, 0.1, 48);
+      const threatM = new THREE.MeshBasicMaterial({ color: 0xf7768e, transparent: true, opacity: 0, side: THREE.DoubleSide });
+      const threatRing = new THREE.Mesh(threatG, threatM);
+      grp.add(threatRing);
+
+      let time = 0, scanT = 0, scanPhase = 0, nextScan = 5;
+      let threatT = 0, threatPhase = 0, nextThreat = 9;
+
+      function tick() {
+        requestAnimationFrame(tick);
+        time += 0.006;
+
+        // Slow planetary rotation
+        grp.rotation.y += 0.0017;
+        grp.rotation.x = Math.sin(time * 0.13) * 0.11;
+
+        // Node pulse + spin
+        nodes.forEach((n, i) => {
+          const s = 1 + Math.sin(time * 1.7 + i * 0.9) * 0.07;
+          n.shell.scale.setScalar(s);
+          n.core.scale.setScalar(s * 0.88);
+          n.shell.rotation.y += 0.006 + i * 0.0008;
+          n.shell.rotation.z += 0.003 + i * 0.0004;
+        });
+
+        // Particle flow
+        particles.forEach(p => {
+          p.t += p.speed * p.dir;
+          if (p.t >= 1) { p.t = 1; p.dir = -1; }
+          if (p.t <= 0) { p.t = 0; p.dir = 1; }
+          p.mesh.position.lerpVectors(p.from, p.to, p.t);
+        });
+
+        // Blue scan pulse (infrastructure scan)
+        nextScan -= 0.016;
+        if (nextScan <= 0 && scanPhase === 0) { scanPhase = 1; scanT = 0; nextScan = 9 + Math.random()*6; }
+        if (scanPhase === 1) {
+          scanT += 0.02;
+          ring.scale.setScalar(scanT * 5);
+          ringM.opacity = Math.max(0, 0.28 - scanT * 0.22);
+          if (scanT > 1.5) { scanPhase = 0; ringM.opacity = 0; }
+        }
+
+        // Red threat pulse (security alert)
+        nextThreat -= 0.016;
+        if (nextThreat <= 0 && threatPhase === 0) { threatPhase = 1; threatT = 0; nextThreat = 14 + Math.random()*10; }
+        if (threatPhase === 1) {
+          threatT += 0.025;
+          threatRing.scale.setScalar(threatT * 3.5);
+          threatM.opacity = Math.max(0, 0.35 - threatT * 0.28);
+          // Flash the WAF/scanner nodes red during alert
+          if (threatT < 0.4) { nodes[3].shell.material.opacity = 1; nodes[6].shell.material.opacity = 1; }
+          else { nodes[3].shell.material.opacity = 0.72; nodes[6].shell.material.opacity = 0.72; }
+          if (threatT > 1.4) { threatPhase = 0; threatM.opacity = 0; }
+        }
+
+        // Mouse parallax — camera drifts toward cursor
+        const tx = (window._mouseNX || 0) * 2.0;
+        const ty = -(window._mouseNY || 0) * 1.3;
+        camera.position.x += (tx - camera.position.x) * 0.04;
+        camera.position.y += (ty - camera.position.y) * 0.04;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+      }
+      tick();
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth < 1300) { cvs.style.display = 'none'; return; }
+        cvs.style.display = 'block';
+        const newW = window.innerWidth >= 1600 ? Math.min(1000, Math.floor(window.innerWidth * 0.62)) : Math.min(800, Math.floor(window.innerWidth * 0.58));
+        renderer.setSize(newW, window.innerHeight);
+        camera.aspect = newW / window.innerHeight;
+        camera.updateProjectionMatrix();
+      });
+    }
   </script>
 </body>
 </html>
