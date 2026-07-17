@@ -1168,6 +1168,9 @@
     const input = document.getElementById('cli-input');
     const cliOutput = document.getElementById('cli-output');
 
+    // Hidden portal target (not listed in `help`)
+    const SECRET_PORTAL = 'http://dhanushbeelink.taild9c370.ts.net/';
+
     const nfHTML = `<div class="neofetch-box"><div class="neofetch-ascii">    ____  __  
    / __ \\/ /_ 
   / / / / __ \\
@@ -1194,6 +1197,11 @@
         cliOutput.appendChild(h);
         let r = '';
         if (cmd === 'clear') { cliOutput.innerHTML = ''; return; }
+        else if (cmd === 'login') {
+          r = '<span style="color:var(--color-success)">Authenticating... establishing secure tunnel...</span>';
+          startMatrix(1500);
+          setTimeout(() => { window.location.href = SECRET_PORTAL; }, 1200);
+        }
         else if (cmd === 'matrix') { startMatrix(5000); r = '<span style="color:var(--color-success)">Follow the white rabbit...</span>'; }
         else if (cmd === 'resume') { window.open('assets/Dhanush-Suresh-Resume.pdf', '_blank'); r = '<span style="color:var(--color-success)">Opening resume.pdf...</span>'; }
         else if (cmd === 'theme' || cmd === 'crt') { document.body.classList.toggle('crt-mode'); r = document.body.classList.contains('crt-mode') ? '<span style="color:var(--color-success)">CRT mode: ON</span>' : '<span style="color:var(--color-warn)">CRT mode: OFF</span>'; }
